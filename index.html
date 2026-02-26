@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inbound Dashboard – February 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Barlow', sans-serif; background: #f8fafc; color: #1e293b; font-size: 14px; }
+    .container { min-height: 100vh; padding: 24px 32px; }
+    
+    /* Header */
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .header h1 { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 12px; }
+    .date-badge { display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 8px; padding: 8px 12px; border: 1px solid #e2e8f0; cursor: pointer; }
+    .date-badge svg { color: #8C082B; }
+    .date-badge span { font-weight: 600; color: #1e293b; }
+    .date-badge .arrow { margin-left: 4px; color: #64748b; }
+    
+    /* Tabs */
+    .tabs { display: flex; gap: 0; margin-bottom: 16px; align-items: center; }
+    .tab { padding: 10px 24px; font-size: 0.875rem; font-weight: 500; cursor: pointer; border: none; background: transparent; color: #64748b; transition: all 0.2s; }
+    .tab:hover { color: #1e293b; }
+    .tab.active { background: #8C082B; color: #fff; border-radius: 6px; }
+    
+    /* Insights Banner */
+    .insights-banner { background: #f1f5f9; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 0.875rem; color: #475569; }
+    .insights-banner strong { color: #1e293b; }
+    
+    /* Cards - Standardized */
+    .card { 
+      background: #fff; 
+      border-radius: 12px; 
+      padding: 16px; 
+      border: 1px solid #cbd5e1; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); 
+    }
+    
+    /* Primary KPI Cards */
+    .kpi-primary { padding: 16px 20px !important; display: flex; flex-direction: column; height: 100%; }
+    .kpi-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .kpi-icon { display: flex; align-items: center; opacity: 0.8; }
+    .kpi-label { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; }
+    .kpi-hero { font-size: 2.5rem; font-weight: 800; line-height: 1; margin-bottom: 4px; letter-spacing: -0.02em; color: #1e293b; }
+    .kpi-meta { font-size: 0.8rem; color: #64748b; font-weight: 500; margin-bottom: 8px; }
+    .kpi-trend { display: flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 600; padding-top: 8px; margin-top: auto; border-top: 1px solid #e2e8f0; }
+    .kpi-trend.up { color: #16a34a; }
+    .kpi-trend.down { color: #dc2626; }
+    .kpi-trend.neutral { color: #1e293b; }
+    .trend-icon { font-size: 0.85rem; }
+    
+    /* Stacked KPI Cards (for February/January columns) */
+    .kpi-stacked { padding: 14px 18px !important; display: flex; flex-direction: column; flex: 1; }
+    .kpi-stacked .kpi-header { margin-bottom: 2px; }
+    .kpi-stacked .kpi-meta { margin-bottom: 0; }
+    .kpi-hero-stacked { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 2px; letter-spacing: -0.02em; color: #1e293b; }
+    .kpi-muted { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+    .kpi-muted .kpi-label { color: #94a3b8; }
+    .kpi-muted .kpi-meta { color: #94a3b8; }
+    
+    /* KPI Recap Section */
+    .kpi-recap { padding-top: 8px; margin-top: auto; border-top: 1px solid #e2e8f0; }
+    .kpi-recap-header { font-size: 0.6rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+    .kpi-recap-value { font-size: 0.8rem; font-weight: 700; color: #1e293b; }
+    
+    /* Highlighted KPI (Total Revenue) - Premium Hero Card */
+    .kpi-highlight { 
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important; 
+      border: none !important; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04) !important;
+      padding: 20px 24px !important;
+    }
+    .kpi-highlight .kpi-header { margin-bottom: 8px; }
+    .kpi-highlight .kpi-icon { color: rgba(255,255,255,0.6); }
+    .kpi-highlight .kpi-label { color: rgba(255,255,255,0.6); font-size: 0.7rem; letter-spacing: 0.1em; }
+    .kpi-highlight .kpi-hero { color: #fff !important; font-size: 2.5rem; margin-bottom: 4px; }
+    .kpi-highlight .kpi-meta { color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+    .kpi-highlight .kpi-recap { border-top-color: rgba(255,255,255,0.15); }
+    .kpi-highlight .kpi-recap-header { color: rgba(255,255,255,0.5); }
+    .kpi-highlight .kpi-recap-value { color: #fff; }
+    .kpi-highlight .kpi-trend { border-top-color: rgba(255,255,255,0.15); padding-top: 8px; }
+    .kpi-highlight .kpi-trend.up { color: #6ee7b7; }
+    .kpi-highlight .kpi-trend.down { color: #fca5a5; }
+    
+    /* Secondary KPI Cards */
+    .kpi-secondary { padding: 14px 16px !important; display: flex; flex-direction: column; height: 100%; }
+    .kpi-header-sm { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .kpi-icon-sm { display: flex; align-items: center; opacity: 0.7; }
+    .kpi-icon-sm svg { width: 14px; height: 14px; }
+    .kpi-label-sm { font-size: 0.65rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; }
+    .kpi-value-sm { font-size: 1.75rem; font-weight: 800; line-height: 1.1; margin-bottom: 2px; color: #1e293b; }
+    .kpi-meta-sm { font-size: 0.7rem; color: #94a3b8; margin-bottom: 6px; }
+    .kpi-trend-sm { font-size: 0.7rem; font-weight: 600; padding-top: 6px; margin-top: auto; border-top: 1px solid #e2e8f0; }
+    .kpi-trend-sm.up { color: #16a34a; }
+    .kpi-trend-sm.down { color: #dc2626; }
+    
+    /* Pitches Card */
+    .pitches-card { padding: 14px 16px !important; display: flex; flex-direction: column; height: 100%; }
+    .pitches-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .pitches-title { font-size: 0.8rem; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
+    .pitches-subtitle { font-size: 0.65rem; color: #94a3b8; font-weight: 500; }
+    .pitches-table { flex: 1; }
+    
+    /* Pitch Rows - Clean product-like list */
+    .pitch-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 6px; margin-bottom: 2px; }
+    .pitch-row:nth-child(odd) { background: rgba(248,250,252,0.8); }
+    .pitch-row:nth-child(even) { background: transparent; }
+    .pitch-row.current { background: linear-gradient(90deg, rgba(100,116,139,0.12) 0%, rgba(100,116,139,0.04) 100%); border-left: 3px solid #64748b; margin-left: -3px; padding-left: 13px; }
+    .pitch-row.current .pitch-month { color: #475569; font-weight: 700; }
+    .pitch-row.current .pitch-count { color: #475569; }
+    .pitch-row.avg { border-top: 1px solid #e2e8f0; margin-top: 6px; padding-top: 10px; background: transparent !important; }
+    .pitch-row.avg .pitch-month { color: #64748b; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; }
+    .pitch-row.avg .pitch-count { color: #64748b; font-weight: 700; }
+    .pitch-month { font-weight: 600; color: #334155; font-size: 0.8rem; flex: 1; }
+    .pitch-count { font-weight: 800; color: #1e293b; font-size: 0.95rem; min-width: 32px; text-align: center; margin-right: 8px; }
+    
+    /* Pitch Badges - Pill style */
+    .pitch-badge { display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.65rem; padding: 4px 10px; border-radius: 20px; min-width: 56px; }
+    .pitch-badge.up { color: #16a34a; background: rgba(22,163,74,0.1); }
+    .pitch-badge.down { color: #dc2626; background: rgba(220,38,38,0.1); }
+    .pitch-badge.pending { color: #64748b; background: #f1f5f9; font-size: 0.6rem; }
+    .pitch-badge.neutral { color: #94a3b8; background: transparent; }
+    
+    /* Section Title */
+    .section-title { font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .section-title .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    
+    /* Revenue Mix */
+    .revenue-legend { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .legend-label { color: #64748b; }
+    .legend-value { font-weight: 700; }
+    .legend-target { color: #94a3b8; font-weight: 400; }
+    .progress-label { font-size: 0.75rem; color: #94a3b8; margin-bottom: 6px; }
+    .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+    .progress-fill { height: 100%; border-radius: 4px; }
+    .progress-text { font-size: 0.875rem; }
+    .progress-text .value { font-weight: 700; }
+    .progress-text .target { color: #94a3b8; }
+    .progress-gap { font-size: 0.8rem; color: #64748b; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f1f5f9; }
+    .progress-gap .gap-value { font-weight: 700; color: #ca8a04; }
+    .progress-gap .gap-separator { margin: 0 8px; color: #cbd5e1; }
+    .progress-gap .gap-note { color: #94a3b8; margin-left: 4px; }
+    
+    /* Close Rate by Source */
+    .close-rate-list { display: flex; flex-direction: column; gap: 14px; }
+    .close-rate-row { display: flex; align-items: center; gap: 12px; }
+    .close-rate-name { font-size: 0.85rem; font-weight: 500; color: #334155; }
+    .close-rate-bar-container { flex: 1; height: 20px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+    .close-rate-bar { height: 100%; background: #8C082B; border-radius: 4px; transition: width 0.5s; }
+    .close-rate-value { width: 50px; font-size: 0.85rem; font-weight: 700; color: #334155; text-align: right; flex-shrink: 0; }
+    
+    /* Deal List */
+    .deal-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; }
+    .deal-item:last-child { margin-bottom: 0; }
+    .deal-num { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; margin-right: 12px; flex-shrink: 0; }
+    .deal-info { flex: 1; }
+    .deal-name { font-weight: 600; color: #1e293b; font-size: 0.875rem; margin-bottom: 2px; }
+    .deal-source { font-size: 0.75rem; color: #64748b; }
+    .deal-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+    .deal-amount { font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
+    
+    /* Grid layouts */
+    .row { display: grid; gap: 16px; margin-bottom: 20px; align-items: stretch; }
+    .row-4-1 { grid-template-columns: 1fr 1fr 1fr 280px; }
+    .row-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .row-2 { grid-template-columns: 1fr 1fr; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 32px; align-items: stretch; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px; align-items: stretch; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
+    .space-y-8 > * + * { margin-top: 32px; }
+    .col-span-2 { grid-column: span 2; }
+    
+    /* Horizontal Bars */
+    .h-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .h-bar-label { width: 128px; font-size: 0.875rem; color: #475569; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .h-bar-track { flex: 1; height: 24px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+    .h-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+    .h-bar-value { width: 48px; text-align: right; font-size: 0.875rem; font-weight: 700; }
+    
+    /* Vertical Chart */
+    .v-chart { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; height: 256px; padding: 0 16px; }
+    .v-bar-container { display: flex; flex-direction: column; align-items: center; flex: 1; }
+    .v-bar-value { font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; }
+    .v-bar-track { width: 100%; height: 200px; background: #f1f5f9; border-radius: 4px 4px 0 0; position: relative; }
+    .v-bar-fill { position: absolute; bottom: 0; width: 100%; border-radius: 4px 4px 0 0; transition: height 0.5s; }
+    .v-bar-label { font-size: 0.75rem; color: #64748b; margin-top: 8px; }
+    
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 16px; font-size: 0.875rem; font-weight: 500; color: #64748b; border-bottom: 1px solid #e2e8f0; }
+    th.center { text-align: center; }
+    th.right { text-align: right; }
+    td { padding: 16px; font-size: 0.875rem; border-bottom: 1px solid #f1f5f9; }
+    td.center { text-align: center; }
+    td.right { text-align: right; }
+    tr:hover { background: #f8fafc; }
+    tr.alt { background: rgba(248,250,252,0.5); }
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.875rem; font-weight: 500; }
+    
+    /* Insights */
+    .insight-card { padding: 12px; border-radius: 10px; margin-bottom: 12px; }
+    .insight-card:last-child { margin-bottom: 0; }
+    .insight-title { font-weight: 600; color: #1e293b; margin-bottom: 4px; font-size: 0.85rem; }
+    .insight-text { font-size: 0.8rem; color: #64748b; line-height: 1.4; }
+    .insight-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .insight-metric { font-weight: 700; font-size: 0.85rem; }
+    
+    /* Initiatives */
+    .initiative { padding: 14px; border-radius: 10px; border: 1px solid; display: flex; flex-direction: column; }
+    .initiative-num { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: 8px; font-size: 0.85rem; }
+    .initiative h4 { font-size: 0.8rem; font-weight: 600; color: #1e293b; margin-bottom: 6px; line-height: 1.3; }
+    .initiative p { font-size: 0.7rem; color: #64748b; line-height: 1.4; margin-bottom: 8px; }
+    .initiative .outcome { font-size: 0.65rem; font-weight: 600; color: #475569; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.06); margin-top: auto; }
+    .initiative .outcome span { color: #1e293b; }
+    .initiative .kpi-target { font-size: 0.75rem; font-weight: 600; color: #1e293b; margin-top: auto; }
+    .initiative .kpi-target span { color: #64748b; font-weight: 500; }
+    .exec-subtitle { font-size: 0.8rem; color: #64748b; margin-bottom: 12px; line-height: 1.4; }
+    .deals-needed-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.8rem; color: #475569; background: #f8fafc; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; border: 1px solid #e2e8f0; }
+    .deals-needed-label { font-weight: 600; color: #64748b; }
+    .deals-needed-item { background: #fff; padding: 4px 10px; border-radius: 4px; border: 1px solid #e2e8f0; }
+    .deals-needed-item strong { color: #0d9488; font-weight: 800; }
+    .deals-needed-warn strong { color: #dc2626; }
+    .deals-needed-sep { color: #94a3b8; font-size: 0.75rem; }
+    .exec-takeaway { background: linear-gradient(135deg, rgba(13,148,136,0.08) 0%, rgba(140,8,43,0.08) 100%); border: 1px solid rgba(13,148,136,0.25); border-radius: 8px; padding: 14px 18px; margin-bottom: 20px; }
+    .exec-takeaway-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #0d9488; margin-bottom: 8px; }
+    .exec-takeaway-list { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; }
+    .exec-takeaway-list li { font-size: 0.85rem; color: #334155; font-weight: 500; position: relative; padding-left: 16px; }
+    .exec-takeaway-list li::before { content: '•'; position: absolute; left: 0; color: #0d9488; font-weight: 700; }
+    .pace-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+    .pace-row { display: flex; justify-content: space-between; align-items: center; }
+    .pace-label { font-size: 0.75rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+    .pace-value { font-size: 1.1rem; font-weight: 800; color: #1e293b; }
+    .pace-goal { color: #dc2626; }
+    .toggle-btn { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 12px; font-size: 0.75rem; font-weight: 600; color: #64748b; cursor: pointer; transition: all 0.2s; }
+    .toggle-btn:hover { background: #e2e8f0; color: #1e293b; }
+    .toggle-btn.active { background: #0d9488; color: #fff; border-color: #0d9488; }
+    .trend-chart { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; padding: 10px 0; gap: 16px; }
+    .trend-bar-group { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; }
+    .trend-bar { background: linear-gradient(180deg, #f97316 0%, #fb923c 100%); border-radius: 4px 4px 0 0; width: 100%; max-width: 60px; display: flex; align-items: flex-start; justify-content: center; padding-top: 6px; transition: height 0.3s ease; }
+    .trend-bar-current { background: linear-gradient(180deg, #0d9488 0%, #14b8a6 100%); }
+    .trend-bar-value { font-size: 0.8rem; font-weight: 700; color: #fff; }
+    .trend-bar-label { font-size: 0.75rem; font-weight: 600; color: #64748b; margin-top: 6px; }
+    .trend-note { font-size: 0.7rem; color: #94a3b8; text-align: center; margin-top: 8px; font-style: italic; }
+    .outlook-section { margin-bottom: 20px; }
+    .outlook-header { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #1e293b; margin-bottom: 12px; }
+    .outlook-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+    .outlook-block { border-radius: 8px; padding: 16px; height: 100%; box-sizing: border-box; }
+    .outlook-blue { background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.25); }
+    .outlook-orange { background: rgba(244,111,10,0.06); border: 1px solid rgba(244,111,10,0.25); }
+    .outlook-red { background: rgba(220,38,38,0.06); border: 1px solid rgba(220,38,38,0.25); }
+    .outlook-teal { background: rgba(13,148,136,0.06); border: 1px solid rgba(13,148,136,0.25); }
+    .outlook-teal .outlook-block-title { color: #0d9488; }
+    .outlook-block-split { border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
+    .outlook-split-section { padding: 12px 16px; flex: 1; }
+    .outlook-split-section.outlook-teal { background: rgba(13,148,136,0.06); border: 1px solid rgba(13,148,136,0.25); border-bottom: none; border-radius: 8px 8px 0 0; }
+    .outlook-split-section.outlook-gray { background: #f1f5f9; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; }
+    .outlook-split-section.outlook-gray .outlook-block-title { color: #64748b; }
+    .outlook-split-divider { height: 1px; background: linear-gradient(to right, rgba(13,148,136,0.3), #e2e8f0); }
+    .outlook-block-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .final-badge { font-size: 0.65rem; font-weight: 600; background: #16a34a; color: white; padding: 2px 8px; border-radius: 10px; text-transform: none; letter-spacing: 0; }
+    .outlook-blue .outlook-block-title { color: #3b82f6; }
+    .outlook-orange .outlook-block-title { color: #f46f0a; }
+    .outlook-red .outlook-block-title { color: #dc2626; }
+    .outlook-maroon { background: rgba(140,8,43,0.06); border: 1px solid rgba(140,8,43,0.25); }
+    .outlook-maroon .outlook-block-title { color: #8c082b; }
+    .outlook-note.strategic { font-style: normal; font-weight: 600; color: #1e293b; background: rgba(13,148,136,0.1); padding: 8px 10px; border-radius: 4px; margin-top: 10px; border-top: none; }
+    .outlook-metrics { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+    .outlook-metric { display: flex; align-items: baseline; gap: 8px; }
+    .outlook-label { font-size: 0.8rem; color: #64748b; min-width: 100px; }
+    .outlook-value { font-size: 0.9rem; font-weight: 700; color: #1e293b; }
+    .outlook-value.negative { color: #dc2626; }
+    .outlook-value.positive { color: #16a34a; }
+    .outlook-value.bold { font-weight: 800; }
+    .outlook-change { font-size: 0.7rem; font-weight: 600; }
+    .outlook-change.positive { color: #16a34a; }
+    .outlook-subtext { font-size: 0.7rem; color: #94a3b8; }
+    .outlook-gap-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #64748b; margin: 8px 0 6px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08); }
+    .outlook-note { font-size: 0.75rem; color: #64748b; font-style: italic; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08); line-height: 1.4; }
+    .outlook-forecast { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.08); }
+    .outlook-forecast-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; padding: 4px 0; }
+    .outlook-forecast-row.alert { background: rgba(220,38,38,0.08); margin: 4px -8px; padding: 6px 8px; border-radius: 4px; }
+    .outlook-forecast-value { font-weight: 700; color: #1e293b; }
+    .pace-tracker-section { margin-bottom: 20px; }
+    .pace-tracker-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .pace-tracker-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0; }
+    .pace-tracker-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #1e293b; }
+    .risk-badge { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .risk-badge.risk-low { background: rgba(22,163,74,0.12); color: #16a34a; }
+    .risk-badge.risk-moderate { background: rgba(202,138,4,0.12); color: #ca8a04; }
+    .risk-badge.risk-high { background: rgba(220,38,38,0.12); color: #dc2626; }
+    .pace-tracker-rows { display: flex; flex-direction: column; gap: 12px; }
+    .pace-tracker-row { display: flex; align-items: center; gap: 16px; padding: 10px 12px; background: #f8fafc; border-radius: 6px; }
+    .pace-tracker-month { font-size: 0.8rem; font-weight: 700; color: #1e293b; min-width: 90px; }
+    .pace-tracker-data { display: flex; gap: 20px; font-size: 0.8rem; color: #64748b; }
+    .pace-tracker-data strong { color: #1e293b; }
+    .pace-gap { color: #dc2626; }
+    .pace-gap strong { color: #dc2626; }
+    .pace-tracker-row.risk-lever { background: linear-gradient(135deg, rgba(13,148,136,0.1), rgba(13,148,136,0.05)); border: 1px solid rgba(13,148,136,0.2); }
+    .pace-tracker-lever-text { font-size: 0.85rem; font-weight: 600; color: #0d9488; }
+    .pace-tracker-complete { background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.2); }
+    .pace-tracker-mixed { background: rgba(202,138,4,0.08); border: 1px solid rgba(202,138,4,0.2); flex-wrap: wrap; }
+    .pace-tracker-note { font-size: 0.75rem; color: #64748b; font-style: italic; width: 100%; margin-top: 6px; }
+    .churn-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .churn-month { font-size: 0.85rem; font-weight: 600; color: #1e293b; }
+    .churn-value { font-size: 1.25rem; font-weight: 800; }
+    .churn-value.negative { color: #dc2626; }
+    .retention-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+    .retention-team-avg { font-size: 0.9rem; color: #64748b; }
+    .retention-team-avg strong { color: #1e293b; font-size: 1.1rem; }
+    .retention-list { display: flex; flex-direction: column; gap: 8px; }
+    .retention-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #f8fafc; border-radius: 6px; flex-wrap: wrap; }
+    .retention-row.inactive { opacity: 0.6; }
+    .retention-name { font-weight: 600; color: #1e293b; min-width: 140px; }
+    .retention-rate { font-weight: 700; font-size: 1.1rem; min-width: 70px; }
+    .retention-rate.excellent { color: #16a34a; }
+    .retention-rate.good { color: #65a30d; }
+    .retention-rate.warning { color: #ca8a04; }
+    .retention-rate.alert { color: #dc2626; }
+    .retention-rate.na { color: #94a3b8; }
+    .retention-note { font-size: 0.75rem; color: #94a3b8; font-style: italic; }
+    .retention-breakdown { font-size: 0.8rem; color: #64748b; }
+    .mrm-completion { display: flex; align-items: center; gap: 16px; }
+    .mrm-label { font-size: 1rem; font-weight: 600; color: #1e293b; }
+    .mrm-value { font-size: 1.5rem; font-weight: 800; color: #F97316; }
+    .pace-positive { color: #16a34a; font-weight: 600; }
+    .pace-positive strong { color: #16a34a; }
+    .exec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px; }
+    .exec-item { display: flex; gap: 12px; padding: 14px; background: #f8fafc; border-radius: 10px; }
+    .exec-num { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+    .exec-content { flex: 1; }
+    .exec-content h4 { font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 6px; }
+    .exec-content ul { margin: 0 0 8px 0; padding-left: 16px; }
+    .exec-content li { font-size: 0.75rem; color: #64748b; line-height: 1.5; margin-bottom: 2px; }
+    .exec-kpi { font-size: 0.75rem; font-weight: 600; color: #1e293b; padding-top: 6px; border-top: 1px solid #e2e8f0; }
+    .exec-kpi span { color: #64748b; font-weight: 500; }
+    .exec-outcomes { background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(140,8,43,0.08)); border-radius: 8px; padding: 20px 28px; text-align: center; border: 1px solid rgba(13,148,136,0.2); }
+    .exec-outcomes h4 { font-size: 1rem; font-weight: 700; color: #0d9488; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .exec-outcomes ul { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 12px; }
+    .exec-outcomes li { font-size: 0.95rem; color: #1e293b; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+    .plan-table { width: 100%; border-collapse: collapse; }
+    .plan-table th { text-align: left; padding: 12px 16px; font-size: 0.8rem; font-weight: 600; color: #1e293b; border-bottom: 1px solid #e2e8f0; }
+    .plan-table th:last-child { padding-left: 48px; }
+    .plan-table td { padding: 14px 16px; font-size: 0.85rem; color: #475569; border-bottom: 1px solid #f1f5f9; }
+    .plan-table td:first-child { font-weight: 500; color: #1e293b; }
+    .plan-table td:last-child { padding-left: 48px; }
+    .plan-table tr:last-child td { border-bottom: none; }
+    
+    /* Deal List (History tab) */
+    .deal-list { display: flex; flex-direction: column; gap: 12px; }
+    .deal-info { display: flex; align-items: center; gap: 12px; }
+    .deal-details p { margin: 0; }
+    .total-row { padding-top: 12px; border-top: 1px solid #e2e8f0; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .total-label { font-weight: 500; color: #64748b; }
+    .total-value { font-size: 1.25rem; font-weight: 700; }
+    
+    /* Colors */
+    .text-teal { color: #0d9488; }
+    .text-maroon { color: #8C082B; }
+    .text-green { color: #16a34a; }
+    .text-red { color: #dc2626; }
+    .text-yellow { color: #ca8a04; }
+    .kpi-days-left { font-size: 0.7rem; font-weight: 600; color: #ca8a04; background: rgba(202,138,4,0.12); padding: 4px 8px; border-radius: 4px; margin-top: 6px; display: inline-block; }
+    .bg-teal { background-color: #0d9488; }
+    .bg-maroon { background-color: #8C082B; }
+    .bg-teal-light { background-color: rgba(13, 148, 136, 0.15); }
+    .bg-maroon-light { background-color: rgba(140, 8, 43, 0.15); }
+    
+    /* Footer */
+    .footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    const e = React.createElement;
+    const { useState } = React;
+
+    // Colors
+    const teal = '#0d9488';
+    const maroon = '#8C082B';
+    const orange = '#F46F0A';
+    const green = '#16a34a';
+    const red = '#dc2626';
+
+    // MRR Goal Calculations
+    const mrrGoal = 30000;
+    const currentMrr = 25300;
+    const sellingDaysLeft = 4;
+    const gapToGoal = mrrGoal - currentMrr;
+    const dailyPaceNeeded = Math.ceil(gapToGoal / sellingDaysLeft);
+    const sellingDaysElapsed = 15; // days sold so far in February
+    const currentMrrPace = Math.round(currentMrr / sellingDaysElapsed);
+
+    // Deal Size Averages & Deals Needed
+    const avgReferralDealSize = 2500;
+    const avgAuditDealSize = 2500;
+    const avgTransferDealSize = 3500;
+    const referralDealsNeeded = Math.ceil(gapToGoal / avgReferralDealSize);
+    const auditDealsNeeded = Math.ceil(gapToGoal / avgAuditDealSize);
+    const transferDealsNeeded = Math.ceil(gapToGoal / avgTransferDealSize);
+
+    // Close Rate Calculation
+    const totalPitches = 82; // February pitches
+    const totalWon = 8; // February deals won
+    const overallCloseRate = ((totalWon / totalPitches) * 100).toFixed(1);
+
+    // Data
+    const sourceData = [
+      { name: 'Digital Audit', pitches: 53, won: 1, amount: 350, closeRate: 1.9 },
+      { name: 'Employee Referral', pitches: 9, won: 3, amount: 8500, closeRate: 33.3 },
+      { name: 'Client Referral', pitches: 3, won: 2, amount: 4500, closeRate: 66.7 },
+      { name: 'Web Lead', pitches: 5, won: 1, amount: 0, closeRate: 20 },
+      { name: 'Upsell', pitches: 4, won: 1, amount: 1500, closeRate: 25.0 },
+      { name: 'Self-Sourced', pitches: 6, won: 1, amount: 1200, closeRate: 16.7 },
+      { name: 'Email', pitches: 1, won: 0, amount: 0, closeRate: 0 },
+      { name: 'LinkedIn', pitches: 1, won: 0, amount: 0, closeRate: 0 },
+    ];
+
+    const pitchData = [
+      { month: 'Feb', count: 19, change: null, current: true },
+      { month: 'Jan', count: 82, change: 11 },
+      { month: 'Dec', count: 74, change: 28 },
+      { month: 'Nov', count: 58, change: 26 },
+      { month: 'Oct', count: 46, change: null },
+    ];
+
+    // Pitches Trend Data (last 120 days)
+    const pitchesTrendData = [
+      { month: 'Oct', pitches: 46 },
+      { month: 'Nov', pitches: 58 },
+      { month: 'Dec', pitches: 74 },
+      { month: 'Jan', pitches: 82 },
+      { month: 'Feb', pitches: 19 },
+    ];
+
+    // Close Rate by Source - Last 120 Days
+    const closeRate120Days = [
+      { name: 'Customer Referral', rate: 60.0, pitches: 15, won: 9 },
+      { name: 'Employee Referral', rate: 60.0, pitches: 30, won: 18 },
+      { name: 'Self-Sourced', rate: 40.0, pitches: 5, won: 2 },
+      { name: 'Upsell', rate: 17.9, pitches: 28, won: 5 },
+      { name: 'Web Lead', rate: 14.3, pitches: 14, won: 2 },
+      { name: 'Digital Audit', rate: 6.0, pitches: 182, won: 11 },
+    ];
+
+    // KPI Icons (Lucide-style line icons)
+    const DollarIcon = e('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+      e('line', { x1: 12, y1: 1, x2: 12, y2: 23 }),
+      e('path', { d: 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' })
+    );
+    
+    const ReceiptIcon = e('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+      e('path', { d: 'M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1Z' }),
+      e('path', { d: 'M14 8H8' }),
+      e('path', { d: 'M16 12H8' }),
+      e('path', { d: 'M13 16H8' })
+    );
+    
+    const ChartIcon = e('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+      e('path', { d: 'M3 3v18h18' }),
+      e('path', { d: 'M18 17V9' }),
+      e('path', { d: 'M13 17V5' }),
+      e('path', { d: 'M8 17v-3' })
+    );
+    
+    const TargetIconSm = e('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+      e('circle', { cx: 12, cy: 12, r: 10 }),
+      e('circle', { cx: 12, cy: 12, r: 6 }),
+      e('circle', { cx: 12, cy: 12, r: 2 })
+    );
+    
+    const SendIcon = e('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+      e('path', { d: 'M22 2L11 13' }),
+      e('path', { d: 'M22 2L15 22l-4-9-9-4 20-7Z' })
+    );
+
+    // Close Rate by Source - February Sales
+    const closeRateData = [
+      { name: 'Client Referral', rate: 66.7, pitches: 3, won: 2 },
+      { name: 'Employee Referral', rate: 33.3, pitches: 9, won: 3 },
+      { name: 'Upsell', rate: 25, pitches: 4, won: 1 },
+      { name: 'Web Lead', rate: 20, pitches: 5, won: 1 },
+      { name: 'Self-Sourced', rate: 16.7, pitches: 6, won: 1 },
+      { name: 'Digital Audit', rate: 1.9, pitches: 53, won: 1 },
+    ];
+
+    const mrrDeals = [
+      { name: 'Print Imaging', amount: 3500, source: 'Employee Referral', psm: 'James Leisinger', vp: 'Ian Suire', category: 'referral' },
+      { name: 'Nashville Machine Co.', amount: 2750, source: 'Executive Sales Referral from Michael Miller', psm: 'Doug Yocco', category: 'referral' },
+      { name: 'Semper Fi Construction', amount: 2500, source: 'Inbound Referral - Mariah Lindsay', psm: 'Doug Yocco', category: 'referral' },
+      { name: 'Uncommon Farms', amount: 2250, source: 'Employee Referral', psm: 'Doug Yocco / Zak Beible', category: 'referral' },
+      { name: 'Campbell Security', amount: 2000, source: "Inbound Client Referral - Bartolino's", psm: 'Doug Yocco', category: 'referral' },
+      { name: 'Fire Extinguisher Service', amount: 1500, source: 'PSM Upsell', psm: 'Jordan Berra', vp: 'Andrew Wittmaier', category: 'upsell' },
+      { name: 'White Glove Exotic', amount: 1200, source: 'Self-Sourced', psm: 'Stephanie Wiley', category: 'self' },
+      { name: 'Caltron Security', amount: 350, source: 'Digital Audit', psm: 'Doug Yocco', category: 'audit' },
+    ];
+
+    const projectDeals = [
+      { name: 'CBD Kratom', amount: 3750, source: 'Strategic Growth Advisory' },
+      { name: 'National Delivery Solutions', amount: 2750, source: 'Non-Recurring Revenue' },
+      { name: 'Failsafe Communications', amount: 1500, source: 'Non-Recurring Revenue' },
+      { name: "Bartolino's Hospitality Group", amount: 1000, source: 'Project Website' },
+      { name: "Chris' Pancakes", amount: 1000, source: 'Website Project' },
+      { name: 'Polyrific', amount: 1000, source: 'Paid Media Test Pilot + Setup' },
+      { name: 'Showalter Roofing Services Inc.', amount: 350, source: 'Landing Page' },
+      { name: 'Caltron Security - Inbound', amount: 250, source: 'Website Optimization Project' },
+    ];
+
+    const januaryDeals = [
+      { name: 'UnCommon Farms', amount: 5541, source: 'Employee Referral' },
+      { name: 'Ace Paving & Maintenance', amount: 3750, source: 'Web Lead' },
+      { name: 'Embassy Landscape Group', amount: 2250, source: 'Digital Audit' },
+      { name: 'Atlas Restoration', amount: 2000, source: 'Digital Audit' },
+      { name: 'Harris United', amount: 1500, source: 'PSM Upsells' },
+      { name: 'New Kent Coatings', amount: 1250, source: 'Web + SEO' },
+      { name: 'Sierra Technology', amount: 1000, source: 'OB Sales' },
+    ];
+
+    const historicalData = [
+      { month: 'Sep', fullMonth: 'September 2025', mrr: 18250, deals: 5, pitches: 64 },
+      { month: 'Oct', fullMonth: 'October 2025', mrr: 19100, deals: 6, pitches: 73 },
+      { month: 'Nov', fullMonth: 'November 2025', mrr: 20500, deals: 9, pitches: 58 },
+      { month: 'Dec', fullMonth: 'December 2025', mrr: 21400, deals: 10, pitches: 74 },
+      { month: 'Jan', fullMonth: 'January 2026', mrr: 17291, deals: 7, pitches: 82 },
+      { month: 'Feb', fullMonth: 'February 2026', mrr: 25300, deals: 8, pitches: 17 },
+    ];
+
+    const pitchHistory = [
+      { month: 'Jan', year: '2025', pitches: 41 },
+      { month: 'Feb', year: '2025', pitches: 49 },
+      { month: 'Mar', year: '2025', pitches: 42 },
+      { month: 'Apr', year: '2025', pitches: 51 },
+      { month: 'May', year: '2025', pitches: 72 },
+      { month: 'Jun', year: '2025', pitches: 63 },
+      { month: 'Jul', year: '2025', pitches: 77 },
+      { month: 'Aug', year: '2025', pitches: 63 },
+      { month: 'Sep', year: '2025', pitches: 64 },
+      { month: 'Oct', year: '2025', pitches: 73 },
+      { month: 'Nov', year: '2025', pitches: 58 },
+      { month: 'Dec', year: '2025', pitches: 74 },
+      { month: 'Jan', year: '2026', pitches: 82 },
+      { month: 'Feb', year: '2026', pitches: 17 },
+    ];
+
+    const dsmPortfolioData = [
+      { name: 'John Halcomb', clients: 33, avgYears: 3.0 },
+      { name: 'Henry Pfeil', clients: 33, avgYears: 2.16 },
+      { name: 'Jacob Yarbrough', clients: 35, avgYears: 2.15 },
+      { name: 'Brian Hoffman', clients: 37, avgYears: 1.67 },
+      { name: 'Aaron Graue', clients: 18, avgYears: 4.34 },
+      { name: 'Matt Gilmore', clients: 19, avgYears: 1.06 },
+      { name: 'Nicholas Chrismer', clients: 14, avgYears: 0.23 },
+      { name: 'Mariah Lindsey', clients: 6, avgYears: 0.30 }
+    ];
+
+    const dpmData = [
+      { name: 'Nicholas Chrismer', activeBuilds: 14, avgLaunchDays: 62, onTimeRate: 92 },
+      { name: 'Mariah Lindsey', activeBuilds: 6, avgLaunchDays: 55, onTimeRate: 95 }
+    ];
+
+    const cancelByDsmData = [
+      { name: 'John Halcomb', clients: 33, avgYears: 3.0, cancels: 4, avgMonths: 40.8, medianMonths: 36.5, ytd2026: 95.89 },
+      { name: 'Jacob Yarbrough', clients: 35, avgYears: 2.15, cancels: 8, avgMonths: 17.0, medianMonths: 18.9, ytd2026: 95.96 },
+      { name: 'Brian Hoffman', clients: 37, avgYears: 1.67, cancels: 1, avgMonths: 13.0, medianMonths: 13.0, ytd2026: 94.05 },
+      { name: 'Henry Pfeil', clients: 33, avgYears: 2.16, cancels: 0, avgMonths: null, medianMonths: null, ytd2026: 102.3 },
+      { name: 'Aaron Graue', clients: 18, avgYears: 4.34, cancels: 0, avgMonths: null, medianMonths: null, ytd2026: null },
+      { name: 'Matt Gilmore', clients: 19, avgYears: 1.06, cancels: 2, avgMonths: 11.0, medianMonths: 11.0, ytd2026: null },
+      { name: 'Anna Walschleger', clients: null, avgYears: null, cancels: 1, avgMonths: 14.8, medianMonths: 14.8, ytd2026: null },
+      { name: 'Dajah Ray', clients: null, avgYears: null, cancels: 1, avgMonths: 15.0, medianMonths: 15.0, ytd2026: null }
+    ];
+
+    const launchVelocityData = [
+      { month: 'Mar 2025', sites: 6, avgDays: 85.2 },
+      { month: 'Apr 2025', sites: 5, avgDays: 85.2 },
+      { month: 'May 2025', sites: 6, avgDays: 82.0 },
+      { month: 'Jun 2025', sites: 5, avgDays: 128.2, flag: 'worst' },
+      { month: 'Jul 2025', sites: 3, avgDays: 109.0 },
+      { month: 'Aug 2025', sites: 7, avgDays: 65.0, flag: 'best' },
+      { month: 'Sep 2025', sites: 4, avgDays: 87.0 },
+      { month: 'Oct 2025', sites: 9, avgDays: 79.6 },
+      { month: 'Nov 2025', sites: 2, avgDays: 78.5 },
+      { month: 'Dec 2025', sites: 4, avgDays: 85.0 },
+      { month: 'Jan 2026', sites: 6, avgDays: 85.3 },
+      { month: 'Feb 2026', sites: 6, avgDays: 91.0 }
+    ];
+
+    // Icons
+    const CalendarIcon = e('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: maroon, strokeWidth: 2 },
+      e('rect', { x: 3, y: 4, width: 18, height: 18, rx: 2 }),
+      e('line', { x1: 16, y1: 2, x2: 16, y2: 6 }),
+      e('line', { x1: 8, y1: 2, x2: 8, y2: 6 }),
+      e('line', { x1: 3, y1: 10, x2: 21, y2: 10 })
+    );
+
+    const ArrowUp = e('svg', { width: 12, height: 12, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 3 },
+      e('polyline', { points: '18 15 12 9 6 15' })
+    );
+
+    const ArrowDown = e('svg', { width: 12, height: 12, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 3 },
+      e('polyline', { points: '6 9 12 15 18 9' })
+    );
+
+    const TrendUp = (color) => e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2 },
+      e('polyline', { points: '22 7 13.5 15.5 8.5 10.5 2 17' }),
+      e('polyline', { points: '16 7 22 7 22 13' })
+    );
+
+    const TrendDown = (color) => e('svg', { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2 },
+      e('polyline', { points: '22 17 13.5 8.5 8.5 13.5 2 7' }),
+      e('polyline', { points: '16 17 22 17 22 11' })
+    );
+
+    const CheckIcon = e('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: teal, strokeWidth: 2 },
+      e('path', { d: 'M22 11.08V12a10 10 0 1 1-5.93-9.14' }),
+      e('polyline', { points: '22 4 12 14.01 9 11.01' })
+    );
+
+    const AlertIcon = e('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: orange, strokeWidth: 2 },
+      e('circle', { cx: 12, cy: 12, r: 10 }),
+      e('line', { x1: 12, y1: 8, x2: 12, y2: 12 }),
+      e('line', { x1: 12, y1: 16, x2: 12.01, y2: 16 })
+    );
+
+    const TargetIcon = (color) => e('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2 },
+      e('circle', { cx: 12, cy: 12, r: 10 }),
+      e('circle', { cx: 12, cy: 12, r: 6 }),
+      e('circle', { cx: 12, cy: 12, r: 2 })
+    );
+
+    // Components
+    function HorizontalBar({ data, dataKey, maxValue, color, showPercent, showDollar }) {
+      return e('div', null,
+        data.map((item, idx) =>
+          e('div', { key: idx, className: 'h-bar' },
+            e('div', { className: 'h-bar-label' }, item.name),
+            e('div', { className: 'h-bar-track' },
+              e('div', { className: 'h-bar-fill', style: { width: (item[dataKey] / maxValue * 100) + '%', backgroundColor: color } })
+            ),
+            e('div', { className: 'h-bar-value', style: { color } }, showPercent ? item[dataKey] + '%' : showDollar ? '$' + item[dataKey].toLocaleString() : item[dataKey])
+          )
+        )
+      );
+    }
+
+    function VerticalChart({ data, color }) {
+      const max = Math.max(...data.map(d => d.mrr));
+      return e('div', { className: 'v-chart' },
+        data.map((item, idx) =>
+          e('div', { key: idx, className: 'v-bar-container' },
+            e('div', { className: 'v-bar-value', style: { color } }, '$' + (item.mrr / 1000).toFixed(1) + 'k'),
+            e('div', { className: 'v-bar-track' },
+              e('div', { className: 'v-bar-fill', style: { height: (item.mrr / max * 100) + '%', backgroundColor: color } })
+            ),
+            e('div', { className: 'v-bar-label' }, item.month)
+          )
+        )
+      );
+    }
+
+    function PitchChart({ data, color }) {
+      const max = Math.max(...data.map(d => d.pitches));
+      return e('div', { className: 'v-chart' },
+        data.map((item, idx) =>
+          e('div', { key: idx, className: 'v-bar-container', style: { flex: '1', minWidth: '40px' } },
+            e('div', { className: 'v-bar-value', style: { color, fontSize: '10px' } }, item.pitches),
+            e('div', { className: 'v-bar-track' },
+              e('div', { className: 'v-bar-fill', style: { height: (item.pitches / max * 100) + '%', backgroundColor: color } })
+            ),
+            e('div', { className: 'v-bar-label', style: { fontSize: '9px' } }, item.month),
+            e('div', { style: { fontSize: '8px', color: '#94a3b8' } }, item.year.slice(2))
+          )
+        )
+      );
+    }
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('sales overview');
+      const [showDealDetail, setShowDealDetail] = useState(false);
+
+      return e('div', { className: 'container' },
+        // Header
+        e('div', { className: 'header' },
+          e('h1', null, 'Inbound Dashboard'),
+          e('div', { className: 'date-badge' },
+            CalendarIcon,
+            e('span', null, 'February 2026'),
+            e('span', { className: 'arrow' }, '▾')
+          )
+        ),
+
+        // Tabs
+        e('div', { className: 'tabs' },
+          ['Sales Overview', 'Sales Summary', 'Retention Outlook', 'Retention by AM', 'Implementation Performance', 'Wins & Improvements'].map(tab =>
+            e('button', {
+              key: tab,
+              className: 'tab' + (activeTab === tab.toLowerCase() ? ' active' : ''),
+              onClick: () => setActiveTab(tab.toLowerCase())
+            }, tab)
+          )
+        ),
+
+        // Overview Tab
+        activeTab === 'sales overview' && e('div', null,
+          // Executive Takeaway + Pace Row
+          e('div', { style: { display: 'flex', gap: '16px', marginBottom: '20px', alignItems: 'stretch' } },
+            e('div', { className: 'exec-takeaway', style: { flex: 1, marginBottom: 0 } },
+              e('div', { className: 'exec-takeaway-title' }, 'Executive Takeaway'),
+              e('ul', { className: 'exec-takeaway-list' },
+                e('li', null, 'Referral-driven revenue is outperforming all other channels.'),
+                e('li', null, 'Digital Audits with New Outbound & Sapper Clients remain low ROI.'),
+                e('li', null, 'Current gap to goal is $' + gapToGoal.toLocaleString() + ' with ' + sellingDaysLeft + ' selling days remaining.'),
+                e('li', null, '1 Web Lead closed in January, currently working on some major deals.')
+              )
+            ),
+            // MRR Pace
+            e('div', { className: 'pace-box', style: { width: '280px' } },
+              e('div', { className: 'pace-row' },
+                e('span', { className: 'pace-label' }, 'Current MRR Pace'),
+                e('span', { className: 'pace-value' }, '$' + currentMrrPace.toLocaleString() + '/day')
+              ),
+              e('div', { className: 'pace-row' },
+                e('span', { className: 'pace-label' }, 'Goal Pace Needed'),
+                e('span', { className: 'pace-value pace-goal' }, '$' + dailyPaceNeeded.toLocaleString() + '/day')
+              )
+            )
+          ),
+          // Row 1: Primary KPIs (large) + Pitches Table
+          e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 280px', gap: '16px', marginBottom: '16px', alignItems: 'stretch' } },
+            // February Column - MRR + Project stacked
+            e('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+              // February MRR
+              e('div', { className: 'card kpi-stacked' },
+                e('div', { className: 'kpi-header' },
+                  e('span', { className: 'kpi-icon text-teal' }, DollarIcon),
+                  e('span', { className: 'kpi-label' }, 'February MRR')
+                ),
+                e('div', { className: 'kpi-hero-stacked text-teal' }, '$' + currentMrr.toLocaleString()),
+                e('div', { className: 'kpi-meta' }, '8 accounts'),
+                e('div', { className: 'kpi-days-left' }, sellingDaysLeft + ' selling days left')
+              ),
+              // February Project
+              e('div', { className: 'card kpi-stacked' },
+                e('div', { className: 'kpi-header' },
+                  e('span', { className: 'kpi-icon text-maroon' }, ReceiptIcon),
+                  e('span', { className: 'kpi-label' }, 'February Project')
+                ),
+                e('div', { className: 'kpi-hero-stacked' }, '$11,600'),
+                e('div', { className: 'kpi-meta' }, '8 projects')
+              )
+            ),
+            // January Column - MRR + Project stacked
+            e('div', { style: { display: 'flex', flexDirection: 'column', gap: '12px' } },
+              // January MRR
+              e('div', { className: 'card kpi-stacked kpi-muted' },
+                e('div', { className: 'kpi-header' },
+                  e('span', { className: 'kpi-icon text-red' }, DollarIcon),
+                  e('span', { className: 'kpi-label' }, 'January MRR')
+                ),
+                e('div', { className: 'kpi-hero-stacked text-red' }, '$16,041'),
+                e('div', { className: 'kpi-meta' }, '7 accounts')
+              ),
+              // January Project
+              e('div', { className: 'card kpi-stacked kpi-muted' },
+                e('div', { className: 'kpi-header' },
+                  e('span', { className: 'kpi-icon' }, ReceiptIcon),
+                  e('span', { className: 'kpi-label' }, 'January Project')
+                ),
+                e('div', { className: 'kpi-hero-stacked' }, '$22,675'),
+                e('div', { className: 'kpi-meta' }, '9 projects')
+              )
+            ),
+            // Total Revenue Card - Primary (highlighted)
+            e('div', { className: 'card kpi-primary kpi-highlight' },
+              e('div', { className: 'kpi-header' },
+                e('span', { className: 'kpi-icon' }, ChartIcon),
+                e('span', { className: 'kpi-label' }, 'Total Revenue')
+              ),
+              e('div', { className: 'kpi-hero' }, '$27,650'),
+              e('div', { className: 'kpi-meta' }, 'MRR + Project'),
+              e('div', { className: 'kpi-recap kpi-recap-dark' },
+                e('div', { className: 'kpi-recap-header' }, 'Recap'),
+                e('div', { className: 'kpi-recap-value' }, 'January Total: ', e('span', { style: { color: '#6ee7b7' } }, '$38,716'))
+              )
+            ),
+            // Pitches Table
+            e('div', { className: 'card pitches-card' },
+              e('div', { className: 'pitches-header' },
+                e('div', null,
+                  e('div', { className: 'pitches-title' }, 'Pitches by Month'),
+                  e('div', { className: 'pitches-subtitle' }, 'Last 6 months')
+                )
+              ),
+              e('div', { className: 'pitches-table' },
+                pitchData.map((p, i) =>
+                  e('div', { key: i, className: 'pitch-row' + (p.current ? ' current' : '') },
+                    e('span', { className: 'pitch-month' }, p.month),
+                    e('span', { className: 'pitch-count' }, p.count),
+                    p.change !== null ? 
+                      e('span', { className: 'pitch-badge ' + (p.change >= 0 ? 'up' : 'down') },
+                        (p.change >= 0 ? '+' : '') + p.change + '%'
+                      ) :
+                      e('span', { className: 'pitch-badge neutral' }, '—')
+                  )
+                ),
+                // Average row
+                e('div', { className: 'pitch-row avg' },
+                  e('span', { className: 'pitch-month' }, 'Avg'),
+                  e('span', { className: 'pitch-count' }, '70'),
+                  e('span', null, '')
+                )
+              )
+            )
+          ),
+
+          // Row 2: Secondary KPIs + Revenue Mix + Close Rate
+          e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px', alignItems: 'stretch' } },
+            // Secondary KPIs combined card
+            e('div', { className: 'card', style: { display: 'flex', flexDirection: 'column', gap: '12px', height: '100%' } },
+              // Show Rate
+              e('div', { style: { flex: 1 } },
+                e('div', { className: 'kpi-header-sm', style: { marginBottom: '4px' } },
+                  e('span', { className: 'kpi-icon-sm text-teal' }, TargetIconSm),
+                  e('span', { className: 'kpi-label-sm' }, 'Show Rate')
+                ),
+                e('div', { style: { display: 'flex', alignItems: 'baseline', gap: '8px' } },
+                  e('span', { style: { fontSize: '1.5rem', fontWeight: 800, color: '#1e293b' } }, '81%'),
+                  e('span', { style: { fontSize: '0.75rem', fontWeight: 600, color: '#16a34a' } }, '↑ 7%')
+                ),
+                e('div', { className: 'kpi-meta-sm' }, 'vs 75% avg')
+              ),
+              // Divider
+              e('div', { style: { borderTop: '1px solid #e2e8f0' } }),
+              // Close Rate (Win Rate)
+              e('div', { style: { flex: 1 } },
+                e('div', { className: 'kpi-header-sm', style: { marginBottom: '4px' } },
+                  e('span', { className: 'kpi-icon-sm text-teal' }, ChartIcon),
+                  e('span', { className: 'kpi-label-sm' }, 'Close Rate')
+                ),
+                e('div', { style: { display: 'flex', alignItems: 'baseline', gap: '8px' } },
+                  e('span', { style: { fontSize: '1.5rem', fontWeight: 800, color: '#1e293b' } }, overallCloseRate + '%'),
+                  e('span', { style: { fontSize: '0.7rem', color: '#64748b' } }, totalWon + ' won / ' + totalPitches + ' pitches')
+                )
+              ),
+              // Divider
+              e('div', { style: { borderTop: '1px solid #e2e8f0' } }),
+              // Proposals
+              e('div', { style: { flex: 1 } },
+                e('div', { className: 'kpi-header-sm', style: { marginBottom: '4px' } },
+                  e('span', { className: 'kpi-icon-sm text-maroon' }, SendIcon),
+                  e('span', { className: 'kpi-label-sm' }, 'Proposals')
+                ),
+                e('span', { style: { fontSize: '1.5rem', fontWeight: 800, color: '#1e293b' } }, '16'),
+                e('div', { className: 'kpi-meta-sm' }, '8 deals closed')
+              )
+            ),
+            // Revenue Mix
+            e('div', { className: 'card' },
+              e('div', { className: 'section-title' },
+                e('span', { className: 'dot', style: { backgroundColor: teal } }),
+                'Revenue Mix'
+              ),
+              e('div', { style: { display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '20px' } },
+                // Donut Chart
+                e('div', { style: { position: 'relative', width: '100px', height: '100px', flexShrink: 0 } },
+                  e('svg', { viewBox: '0 0 36 36', style: { width: '100%', height: '100%', transform: 'rotate(-90deg)' } },
+                    e('circle', { cx: 18, cy: 18, r: 14, fill: 'none', stroke: '#e2e8f0', strokeWidth: 3.5 }),
+                    e('circle', { cx: 18, cy: 18, r: 14, fill: 'none', stroke: teal, strokeWidth: 3.5, strokeDasharray: '58 100', strokeLinecap: 'round' }),
+                    e('circle', { cx: 18, cy: 18, r: 14, fill: 'none', stroke: maroon, strokeWidth: 3.5, strokeDasharray: '42 100', strokeDashoffset: '-58', strokeLinecap: 'round' })
+                  )
+                ),
+                // Legend
+                e('div', { className: 'revenue-legend' },
+                  e('div', { className: 'legend-item' },
+                    e('span', { className: 'legend-dot', style: { backgroundColor: teal } }),
+                    e('span', { className: 'legend-label' }, 'MRR'),
+                    e('span', { className: 'legend-value text-teal' }, '$25,300')
+                  ),
+                  e('div', { className: 'legend-item' },
+                    e('span', { className: 'legend-dot', style: { backgroundColor: maroon } }),
+                    e('span', { className: 'legend-label' }, 'Project'),
+                    e('span', { className: 'legend-value text-maroon' }, '$11,600')
+                  )
+                )
+              ),
+              e('div', { className: 'progress-label' }, 'Current Revenue / Goal Revenue'),
+              e('div', { className: 'progress-bar' },
+                e('div', { className: 'progress-fill', style: { width: (currentMrr / mrrGoal * 100) + '%', backgroundColor: teal } })
+              ),
+              e('div', { className: 'progress-text' },
+                e('span', null, 'MRR '),
+                e('span', { className: 'value text-teal' }, '$' + currentMrr.toLocaleString()),
+                e('span', null, ' / '),
+                e('span', { style: { fontWeight: 700, color: '#1e293b' } }, '$' + mrrGoal.toLocaleString())
+              ),
+              e('div', { style: { marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #e2e8f0' } },
+                e('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '6px' } },
+                  e('span', { style: { color: '#64748b', fontWeight: 600 } }, 'Gap to Goal'),
+                  e('span', { style: { color: '#dc2626', fontWeight: 800 } }, '$' + gapToGoal.toLocaleString())
+                ),
+                e('div', { style: { display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' } },
+                  e('span', { style: { color: '#64748b', fontWeight: 600 } }, 'Required Pace'),
+                  e('span', { style: { color: '#1e293b', fontWeight: 800 } },
+                    '$' + dailyPaceNeeded.toLocaleString() + '/day',
+                    e('span', { style: { color: '#94a3b8', fontWeight: 600, marginLeft: '6px', fontSize: '0.75rem' } },
+                      '(' + sellingDaysLeft + ' selling days)'
+                    )
+                  )
+                )
+              )
+            ),
+            // Close Rate by Source (February)
+            e('div', { className: 'card' },
+              e('div', { className: 'section-title' },
+                e('span', { className: 'dot', style: { backgroundColor: maroon } }),
+                'Close Rate by Source (February)'
+              ),
+              e('div', { className: 'close-rate-list' },
+                closeRateData.map((s, i) =>
+                  e('div', { key: i, className: 'close-rate-row' },
+                    e('div', { style: { width: '130px' } },
+                      e('span', { className: 'close-rate-name' }, s.name),
+                      e('div', { style: { fontSize: '0.7rem', color: '#94a3b8', marginTop: '2px' } }, s.pitches, ' pitches')
+                    ),
+                    e('div', { className: 'close-rate-bar-container' },
+                      e('div', { className: 'close-rate-bar', style: { width: s.rate + '%' } })
+                    ),
+                    e('span', { className: 'close-rate-value' }, s.rate + '%')
+                  )
+                )
+              )
+            )
+          ),
+
+          // Row 3: Close Rate by Source - Last 120 Days
+          e('div', { className: 'card', style: { marginBottom: '16px' } },
+            e('div', { className: 'section-title' },
+              e('span', { className: 'dot', style: { backgroundColor: orange } }),
+              'Close Rate by Source — Last 120 Days'
+            ),
+            e('div', { className: 'close-rate-list' },
+              closeRate120Days.map((s, i) =>
+                e('div', { key: i, className: 'close-rate-row' },
+                  e('div', { style: { width: '140px' } },
+                    e('span', { className: 'close-rate-name' }, s.name),
+                    e('div', { style: { fontSize: '0.7rem', color: '#94a3b8', marginTop: '2px' } }, s.pitches, ' pitches • ', s.won, ' won')
+                  ),
+                  e('div', { className: 'close-rate-bar-container' },
+                    e('div', { className: 'close-rate-bar', style: { width: s.rate + '%', backgroundColor: s.rate >= 50 ? teal : s.rate >= 15 ? orange : '#dc2626' } })
+                  ),
+                  e('span', { className: 'close-rate-value', style: { color: s.rate >= 50 ? teal : s.rate >= 15 ? orange : '#dc2626' } }, s.rate + '%')
+                )
+              )
+            ),
+            e('div', { className: 'trend-note' }, '279 total pitches • 47 won • 16.8% overall close rate')
+          ),
+
+          // Row 4: Deal Detail Toggle + Deal Lists
+          e('div', { style: { marginBottom: '16px' } },
+            e('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' } },
+              e('span', { style: { fontSize: '0.9rem', fontWeight: 600, color: '#1e293b' } }, 'Deal Detail'),
+              e('button', { 
+                className: 'toggle-btn' + (showDealDetail ? ' active' : ''),
+                onClick: () => setShowDealDetail(!showDealDetail)
+              }, showDealDetail ? 'Hide Deal Detail' : 'Show Deal Detail')
+            ),
+            showDealDetail && e('div', { className: 'row row-2' },
+              // MRR Sales
+              e('div', { className: 'card' },
+                e('div', { className: 'section-title' },
+                  e('span', { className: 'dot', style: { backgroundColor: teal } }),
+                  'February MRR Sales'
+                ),
+                mrrDeals.map((deal, i) =>
+                  e('div', { key: i, className: 'deal-item' },
+                    e('div', { style: { display: 'flex', alignItems: 'flex-start' } },
+                      e('div', { className: 'deal-num bg-teal-light text-teal' }, i + 1),
+                      e('div', { className: 'deal-info' },
+                        e('div', { className: 'deal-name' }, deal.name),
+                        e('div', { className: 'deal-source' }, deal.source),
+                        deal.psm && e('div', { className: 'deal-meta' }, '📋 ', deal.psm)
+                      )
+                    ),
+                    e('div', { className: 'deal-amount text-teal' }, '$' + deal.amount.toLocaleString())
+                  )
+                ),
+                // Total row
+                e('div', { className: 'total-row' },
+                  e('span', { className: 'total-label' }, 'Total MRR'),
+                  e('span', { className: 'total-value text-teal' }, '$25,300')
+                )
+              ),
+              // Project Sales
+              e('div', { className: 'card' },
+                e('div', { className: 'section-title' },
+                  e('span', { className: 'dot', style: { backgroundColor: maroon } }),
+                  'February Project Sales'
+                ),
+                projectDeals.map((deal, i) =>
+                  e('div', { key: i, className: 'deal-item' },
+                    e('div', { style: { display: 'flex', alignItems: 'flex-start' } },
+                      e('div', { className: 'deal-num bg-maroon-light text-maroon' }, i + 1),
+                      e('div', { className: 'deal-info' },
+                        e('div', { className: 'deal-name' }, deal.name),
+                        e('div', { className: 'deal-source' }, deal.source),
+                        deal.psm && e('div', { className: 'deal-meta' }, '📋 ', deal.psm, deal.vp ? '  ' + deal.vp : '')
+                      )
+                    ),
+                    e('div', { className: 'deal-amount text-maroon' }, '$' + deal.amount.toLocaleString())
+                  )
+                ),
+                // Total row
+                e('div', { className: 'total-row' },
+                  e('span', { className: 'total-label' }, 'Total Project'),
+                  e('span', { className: 'total-value text-maroon' }, '$11,600')
+                )
+              )
+            )
+          )
+        ),
+
+        // Sources Tab
+        activeTab === 'sources' && e('div', null,
+          e('div', { className: 'grid-3' },
+            e('div', { className: 'card' },
+              e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: orange } }), 'Pitches by Source'),
+              e(HorizontalBar, { data: sourceData, dataKey: 'pitches', maxValue: 60, color: orange })
+            ),
+            e('div', { className: 'card' },
+              e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: teal } }), 'Amount Won by Source'),
+              e(HorizontalBar, { data: sourceData.filter(s => s.amount > 0), dataKey: 'amount', maxValue: 7000, color: teal, showDollar: true })
+            ),
+            e('div', { className: 'card' },
+              e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: maroon } }), 'Close Rate by Source'),
+              e(HorizontalBar, { data: sourceData.filter(s => s.closeRate > 0), dataKey: 'closeRate', maxValue: 100, color: maroon, showPercent: true })
+            )
+          ),
+          e('div', { className: 'card' },
+            e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: maroon } }), 'Source Performance Detail'),
+            e('p', { style: { fontSize: '0.875rem', color: '#94a3b8', marginBottom: '16px', marginLeft: '16px' } }, 'New Revenue 1/13-2/9'),
+            e('table', null,
+              e('thead', null,
+                e('tr', null,
+                  e('th', null, 'Source'),
+                  e('th', { className: 'center' }, 'Pitches'),
+                  e('th', { className: 'center' }, 'Proposals'),
+                  e('th', { className: 'center' }, 'Won'),
+                  e('th', { className: 'right' }, 'Amount'),
+                  e('th', { className: 'right' }, 'Close Rate')
+                )
+              ),
+              e('tbody', null,
+                sourceData.map((s, idx) =>
+                  e('tr', { key: idx, className: idx % 2 === 0 ? 'alt' : '' },
+                    e('td', { style: { fontWeight: 500, color: '#1e293b' } }, s.name),
+                    e('td', { className: 'center', style: { color: '#475569' } }, s.pitches),
+                    e('td', { className: 'center', style: { color: '#475569' } }, s.proposals),
+                    e('td', { className: 'center' },
+                      e('span', { className: 'badge', style: { backgroundColor: s.won > 0 ? 'rgba(66,191,186,0.2)' : 'transparent', color: s.won > 0 ? teal : '#94a3b8' } }, s.won)
+                    ),
+                    e('td', { className: 'right', style: { fontWeight: 600, color: s.amount > 0 ? teal : '#94a3b8' } }, s.amount > 0 ? '$' + s.amount.toLocaleString() : '-'),
+                    e('td', { className: 'right', style: { fontWeight: 600, color: s.closeRate >= 30 ? teal : s.closeRate > 0 ? orange : '#94a3b8' } }, s.closeRate > 0 ? s.closeRate + '%' : '-')
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        // History Tab
+        activeTab === 'history' && e('div', { className: 'space-y-8' },
+          e('div', { className: 'grid-4' },
+            e('div', { className: 'card' },
+              e('p', { className: 'card-title' }, '6-Month Total'),
+              e('p', { className: 'card-value', style: { color: teal } }, '$112,591'),
+              e('p', { className: 'card-subtitle' }, 'New MRR Closed')
+            ),
+            e('div', { className: 'card' },
+              e('p', { className: 'card-title' }, 'Total Deals'),
+              e('p', { className: 'card-value', style: { color: orange } }, '45'),
+              e('p', { className: 'card-subtitle' }, 'New accounts won')
+            ),
+            e('div', { className: 'card' },
+              e('p', { className: 'card-title' }, 'Avg Monthly'),
+              e('p', { className: 'card-value', style: { color: maroon } }, '$18,765'),
+              e('p', { className: 'card-subtitle' }, 'Average new MRR')
+            ),
+            e('div', { className: 'card' },
+              e('p', { className: 'card-title' }, 'Best Month'),
+              e('p', { className: 'card-value', style: { color: teal } }, "Dec '25"),
+              e('p', { className: 'card-subtitle' }, '$21,400 • 10 deals')
+            )
+          ),
+          e('div', { className: 'card' },
+            e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: teal } }), 'New Inbound MRR by Month'),
+            e(VerticalChart, { data: historicalData, color: teal })
+          ),
+          e('div', { className: 'card' },
+            e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: orange } }), 'Pitches by Month (2025-2026)'),
+            e('div', { style: { display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px', color: '#64748b' } },
+              e('span', null, '2025 Total: 727'),
+              e('span', null, '2026 YTD: 99')
+            ),
+            e(PitchChart, { data: pitchHistory, color: orange })
+          ),
+          e('div', { className: 'grid-2' },
+            e('div', { className: 'card' },
+              e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: orange } }), 'January 2026 MRR Breakdown'),
+              e('div', { className: 'deal-list' },
+                januaryDeals.map((deal, idx) =>
+                  e('div', { key: idx, className: 'deal-item' },
+                    e('div', { className: 'deal-info' },
+                      e('div', { className: 'deal-num', style: { backgroundColor: 'rgba(244,111,10,0.2)', color: orange, width: 24, height: 24, fontSize: '0.75rem' } }, idx + 1),
+                      e('div', { className: 'deal-details' },
+                        e('p', { className: 'deal-name' }, deal.name),
+                        e('p', { className: 'deal-source' }, deal.source)
+                      )
+                    ),
+                    e('div', { className: 'deal-amount', style: { color: orange } }, '$' + deal.amount.toLocaleString())
+                  )
+                ),
+                e('div', { className: 'total-row' },
+                  e('span', { className: 'total-label', style: { fontWeight: 700, color: '#1e293b' } }, 'Total January MRR'),
+                  e('span', { className: 'total-value', style: { color: orange } }, '$17,291')
+                )
+              )
+            ),
+            e('div', { className: 'card' },
+              e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: maroon } }), 'Monthly Breakdown'),
+              e('table', null,
+                e('thead', null,
+                  e('tr', null,
+                    e('th', null, 'Month'),
+                    e('th', { className: 'right' }, 'MRR'),
+                    e('th', { className: 'right' }, 'Deals'),
+                    e('th', { className: 'right' }, 'Avg Deal')
+                  )
+                ),
+                e('tbody', null,
+                  historicalData.map((row, idx) =>
+                    e('tr', { key: idx, className: idx % 2 === 0 ? 'alt' : '' },
+                      e('td', { style: { fontWeight: 500, color: '#1e293b' } }, row.fullMonth),
+                      e('td', { className: 'right', style: { fontWeight: 600, color: teal } }, '$' + row.mrr.toLocaleString()),
+                      e('td', { className: 'right', style: { color: '#475569' } }, row.deals),
+                      e('td', { className: 'right', style: { color: '#475569' } }, '$' + Math.round(row.mrr / row.deals).toLocaleString())
+                    )
+                  )
+                ),
+                e('tfoot', null,
+                  e('tr', { style: { borderTop: '2px solid #cbd5e1', background: '#f8fafc' } },
+                    e('td', { style: { fontWeight: 700, color: '#1e293b' } }, 'Total / Avg'),
+                    e('td', { className: 'right', style: { fontWeight: 700, color: teal } }, '$112,591'),
+                    e('td', { className: 'right', style: { fontWeight: 700, color: '#1e293b' } }, '45'),
+                    e('td', { className: 'right', style: { fontWeight: 700, color: '#475569' } }, '$2,502')
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        // Retention Outlook Tab
+        activeTab === 'retention outlook' && e('div', null,
+
+          // Executive Retention Header
+          (function() {
+            var rollingAvg = 97.7;
+            var target = 97.5;
+            var variance = rollingAvg - target;
+            var aboveTarget = '#0d9488';
+            var atRisk = '#d97706';
+            var belowTarget = '#dc2626';
+            var statusLabel = rollingAvg >= target
+              ? 'Above Target \u2013 Stable'
+              : rollingAvg >= target - 0.5
+              ? 'At Risk \u2013 Monitor'
+              : 'Below Target \u2013 Action Required';
+            var statusColor = rollingAvg >= target
+              ? aboveTarget
+              : rollingAvg >= target - 0.5
+              ? atRisk
+              : belowTarget;
+            var varianceLabel = (variance >= 0 ? '+' : '') + variance.toFixed(1) + '% ' + (variance >= 0 ? 'above' : 'below') + ' target';
+            var varianceColor = variance >= 0 ? aboveTarget : variance >= -0.5 ? atRisk : belowTarget;
+
+            return e('div', { style: { background: '#0f172a', borderRadius: '12px', overflow: 'hidden', marginBottom: '24px', boxShadow: '0 4px 24px rgba(0,0,0,0.15)' } },
+              // Top accent line
+              e('div', { style: { height: '3px', background: 'linear-gradient(90deg, ' + statusColor + ', ' + statusColor + '88, transparent)' } }),
+              // Content
+              e('div', { style: { padding: '22px 28px' } },
+                // Row 1: Title + verdict badge
+                e('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '8px' } },
+                  e('div', { style: { fontSize: '0.65rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.18em' } }, 'Retention Status \u2013 February 2026'),
+                  e('div', { style: { fontSize: '0.7rem', fontWeight: 600, color: statusColor, backgroundColor: statusColor + '18', padding: '5px 16px', borderRadius: '4px', letterSpacing: '0.04em' } }, statusLabel)
+                ),
+                // Row 2: Overall Position
+                e('div', { style: { fontSize: '1.05rem', fontWeight: 500, color: '#cbd5e1', marginBottom: '20px' } },
+                  'Overall Position: ',
+                  e('span', { style: { color: '#e2e8f0', fontWeight: 700 } }, 'Stable'),
+                  e('span', { style: { color: '#94a3b8', fontWeight: 400 } }, ' with '),
+                  e('span', { style: { color: atRisk, fontWeight: 600 } }, 'moderate volatility')
+                ),
+                // Divider
+                e('div', { style: { height: '1px', backgroundColor: '#1e293b', marginBottom: '18px' } }),
+                // Metrics row
+                e('div', { style: { display: 'flex', alignItems: 'flex-start', gap: '0', flexWrap: 'wrap' } },
+                  // Rolling Avg
+                  e('div', { style: { flex: '1 1 auto', minWidth: '100px' } },
+                    e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Rolling 3-Mo Avg'),
+                    e('div', { style: { fontSize: '1.5rem', fontWeight: 800, color: statusColor, letterSpacing: '-0.02em' } }, rollingAvg.toFixed(1) + '%')
+                  ),
+                  // Target
+                  e('div', { style: { flex: '1 1 auto', minWidth: '80px', borderLeft: '1px solid #1e293b', paddingLeft: '20px' } },
+                    e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Target'),
+                    e('div', { style: { fontSize: '1.5rem', fontWeight: 800, color: '#cbd5e1', letterSpacing: '-0.02em' } }, target.toFixed(1) + '%')
+                  ),
+                  // Variance
+                  e('div', { style: { flex: '1.5 1 auto', minWidth: '140px', borderLeft: '1px solid #1e293b', paddingLeft: '20px' } },
+                    e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Variance'),
+                    e('div', { style: { fontSize: '1.5rem', fontWeight: 800, color: varianceColor, letterSpacing: '-0.02em' } }, varianceLabel)
+                  ),
+                  // Churn Pressure
+                  e('div', { style: { flex: '1 1 auto', minWidth: '100px', borderLeft: '1px solid #1e293b', paddingLeft: '20px' } },
+                    e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Churn Pressure'),
+                    e('div', { style: { fontSize: '1rem', fontWeight: 700, color: atRisk } }, 'Moderate')
+                  ),
+                  // Peak Churn Window
+                  e('div', { style: { flex: '1 1 auto', minWidth: '110px', borderLeft: '1px solid #1e293b', paddingLeft: '20px' } },
+                    e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Peak Churn Window'),
+                    e('div', { style: { fontSize: '1rem', fontWeight: 700, color: '#94a3b8' } }, '12\u201318 Months')
+                  ),
+                  // Early Churn
+                  e('div', { style: { flex: '1 1 auto', minWidth: '80px', borderLeft: '1px solid #1e293b', paddingLeft: '20px' } },
+                    e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Early Churn (<6mo)'),
+                    e('div', { style: { fontSize: '1rem', fontWeight: 700, color: aboveTarget } }, '1 Case')
+                  )
+                )
+              )
+            );
+          })(),
+
+          e('div', null,
+
+            // Row 1: Churn Pressure + Trend Sparkline
+            e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginBottom: '16px' } },
+              e('div', { className: 'card', style: { padding: '20px' } },
+                e('div', { style: { fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' } }, 'Churn Pressure Index'),
+                e('div', { style: { display: 'flex', flexDirection: 'column', gap: '10px' } },
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+                    e('span', { style: { fontSize: '0.8rem', color: '#475569' } }, 'Retention Health'),
+                    e('span', { style: { fontSize: '0.8rem', fontWeight: 700, color: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', padding: '2px 10px', borderRadius: '10px' } }, '\u{1F7E2} Stable')
+                  ),
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+                    e('span', { style: { fontSize: '0.8rem', color: '#475569' } }, 'Churn Pressure'),
+                    e('span', { style: { fontSize: '0.8rem', fontWeight: 700, color: '#ca8a04', backgroundColor: 'rgba(202,138,4,0.1)', padding: '2px 10px', borderRadius: '10px' } }, '\u{1F7E1} Moderate')
+                  ),
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+                    e('span', { style: { fontSize: '0.8rem', color: '#475569' } }, 'Lifecycle Risk'),
+                    e('span', { style: { fontSize: '0.8rem', fontWeight: 700, color: '#ca8a04', backgroundColor: 'rgba(202,138,4,0.1)', padding: '2px 10px', borderRadius: '10px' } }, '12\u201318 mo cohort')
+                  )
+                )
+              ),
+              e('div', { className: 'card', style: { padding: '20px' } },
+                e('div', { style: { fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' } }, 'Retention Trend'),
+                e('div', { style: { position: 'relative', height: '80px' } },
+                  e('svg', { viewBox: '0 0 300 80', style: { width: '100%', height: '100%' } },
+                    e('line', { x1: 0, y1: 23, x2: 300, y2: 23, stroke: '#e2e8f0', strokeWidth: 1, strokeDasharray: '4,4' }),
+                    e('defs', null,
+                      e('linearGradient', { id: 'retGrad', x1: 0, y1: 0, x2: 0, y2: 1 },
+                        e('stop', { offset: '0%', stopColor: '#ca8a04', stopOpacity: 0.15 }),
+                        e('stop', { offset: '100%', stopColor: '#ca8a04', stopOpacity: 0.02 })
+                      )
+                    ),
+                    e('path', { d: 'M 37 36.8 L 112 54.4 L 187 17.6 L 262 43.2 L 262 80 L 37 80 Z', fill: 'url(#retGrad)' }),
+                    e('polyline', { points: '37,36.8 112,54.4 187,17.6 262,43.2', fill: 'none', stroke: '#ca8a04', strokeWidth: 2.5, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+                    e('circle', { cx: 37, cy: 36.8, r: 4, fill: '#fff', stroke: '#ca8a04', strokeWidth: 2 }),
+                    e('circle', { cx: 112, cy: 54.4, r: 4, fill: '#fff', stroke: '#dc2626', strokeWidth: 2 }),
+                    e('circle', { cx: 187, cy: 17.6, r: 4, fill: '#fff', stroke: '#16a34a', strokeWidth: 2 }),
+                    e('circle', { cx: 262, cy: 43.2, r: 4, fill: '#fff', stroke: '#ca8a04', strokeWidth: 2 }),
+                    e('text', { x: 37, y: 75, fill: '#94a3b8', fontSize: '9', textAnchor: 'middle', fontWeight: 500 }, 'Jan'),
+                    e('text', { x: 112, y: 75, fill: '#94a3b8', fontSize: '9', textAnchor: 'middle', fontWeight: 500 }, 'Feb'),
+                    e('text', { x: 187, y: 75, fill: '#94a3b8', fontSize: '9', textAnchor: 'middle', fontWeight: 500 }, 'Mar'),
+                    e('text', { x: 262, y: 75, fill: '#94a3b8', fontSize: '9', textAnchor: 'middle', fontWeight: 500 }, 'Apr'),
+                    e('text', { x: 37, y: 28, fill: '#475569', fontSize: '9', textAnchor: 'middle', fontWeight: 700 }, '97.7%'),
+                    e('text', { x: 112, y: 48, fill: '#dc2626', fontSize: '9', textAnchor: 'middle', fontWeight: 700 }, '96.6%'),
+                    e('text', { x: 187, y: 11, fill: '#16a34a', fontSize: '9', textAnchor: 'middle', fontWeight: 700 }, '98.9%'),
+                    e('text', { x: 262, y: 37, fill: '#475569', fontSize: '9', textAnchor: 'middle', fontWeight: 700 }, '97.3%')
+                  )
+                ),
+                e('div', { style: { display: 'flex', justifyContent: 'space-between', marginTop: '4px' } },
+                  e('span', { style: { fontSize: '0.65rem', color: '#94a3b8' } }, 'Dashed line = 97.7% target'),
+                  e('span', { style: { fontSize: '0.65rem', color: '#ca8a04', fontWeight: 600 } }, '\u{1F7E1} Volatile \u2014 no clear direction')
+                )
+              )
+            ),
+
+            // Monthly Retention Cards (Retention-first hierarchy)
+            e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '16px', marginBottom: '16px' } },
+              e('div', { className: 'card', style: { padding: '16px', borderTop: '3px solid ' + teal } },
+                e('div', { style: { fontSize: '0.75rem', fontWeight: 600, color: '#64748b', marginBottom: '4px' } }, 'January 2026'),
+                e('div', { style: { fontSize: '1.8rem', fontWeight: 800, color: '#1e293b', marginBottom: '8px' } }, '97.7%'),
+                e('div', { style: { display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.75rem' } },
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'Net Impact'), e('span', { style: { color: '#dc2626', fontWeight: 600 } }, '-$12,321')),
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'Starting MRR'), e('span', { style: { color: '#475569', fontWeight: 600 } }, '$496,180')),
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'New Sales'), e('span', { style: { color: '#16a34a', fontWeight: 600 } }, '+$16,041')),
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'Ending MRR'), e('span', { style: { color: '#475569', fontWeight: 600 } }, '$499,800'))
+                )
+              ),
+              e('div', { className: 'card', style: { padding: '16px', borderTop: '3px solid #dc2626' } },
+                e('div', { style: { fontSize: '0.75rem', fontWeight: 600, color: '#64748b', marginBottom: '4px' } }, 'February 2026'),
+                e('div', { style: { fontSize: '1.8rem', fontWeight: 800, color: '#dc2626', marginBottom: '8px' } }, '96.6%'),
+                e('div', { style: { display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.75rem' } },
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'Net Impact'), e('span', { style: { color: '#dc2626', fontWeight: 600 } }, '-$18,694')),
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'Starting MRR'), e('span', { style: { color: '#475569', fontWeight: 600 } }, '$499,800')),
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'New Sales'), e('span', { style: { color: '#16a34a', fontWeight: 600 } }, '+$25,300')),
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'Ending MRR'), e('span', { style: { color: '#475569', fontWeight: 600 } }, '$490,881'))
+                )
+              ),
+              e('div', { className: 'card', style: { padding: '16px', borderTop: '3px solid #16a34a' } },
+                e('div', { style: { fontSize: '0.75rem', fontWeight: 600, color: '#64748b', marginBottom: '4px' } }, 'March 2026'),
+                e('div', { style: { fontSize: '1.8rem', fontWeight: 800, color: '#16a34a', marginBottom: '8px' } }, '98.9%'),
+                e('div', { style: { display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.75rem' } },
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'Net Impact'), e('span', { style: { color: '#dc2626', fontWeight: 600 } }, '-$5,975'))
+                )
+              ),
+              e('div', { className: 'card', style: { padding: '16px', borderTop: '3px solid #ca8a04' } },
+                e('div', { style: { fontSize: '0.75rem', fontWeight: 600, color: '#64748b', marginBottom: '4px' } }, 'April 2026'),
+                e('div', { style: { fontSize: '1.8rem', fontWeight: 800, color: '#ca8a04', marginBottom: '8px' } }, '97.3%'),
+                e('div', { style: { display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.75rem' } },
+                  e('div', { style: { display: 'flex', justifyContent: 'space-between' } }, e('span', { style: { color: '#94a3b8' } }, 'Net Impact'), e('span', { style: { color: '#dc2626', fontWeight: 600 } }, '-$14,025'))
+                )
+              )
+            ),
+
+            // Lifecycle Context - Row 1
+            e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '12px' } },
+              e('div', { className: 'card', style: { padding: '16px', textAlign: 'center', borderTop: '3px solid ' + maroon } },
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' } }, 'Active Accounts'),
+                e('div', { style: { fontSize: '1.8rem', fontWeight: 800, color: '#1e293b' } }, '211'),
+                e('div', { style: { fontSize: '0.7rem', color: '#64748b' } }, 'Total inbound portfolio')
+              ),
+              e('div', { className: 'card', style: { padding: '16px', textAlign: 'center', borderTop: '3px solid ' + teal } },
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' } }, 'Avg Client Tenure'),
+                e('div', { style: { fontSize: '1.8rem', fontWeight: 800, color: '#1e293b' } }, '2.1 yrs'),
+                e('div', { style: { fontSize: '0.7rem', color: '#64748b' } }, 'Weighted avg across all DSMs')
+              ),
+              e('div', { className: 'card', style: { padding: '16px', textAlign: 'center', borderTop: '3px solid ' + teal } },
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' } }, 'Avg Months to Cancel'),
+                e('div', { style: { fontSize: '1.8rem', fontWeight: 800, color: '#1e293b' } }, '21.8'),
+                e('div', { style: { fontSize: '0.7rem', color: '#64748b' } }, 'Across all churned accounts')
+              )
+            ),
+            // Lifecycle Context - Row 2
+            e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' } },
+              e('div', { className: 'card', style: { padding: '16px', textAlign: 'center', borderTop: '3px solid #ca8a04' } },
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' } }, 'Peak Churn Window'),
+                e('div', { style: { fontSize: '1.8rem', fontWeight: 800, color: '#ca8a04' } }, '12\u201318 mo'),
+                e('div', { style: { fontSize: '0.7rem', color: '#64748b' } }, 'Highest cancellation concentration')
+              ),
+              e('div', { className: 'card', style: { padding: '16px', textAlign: 'center', borderTop: '3px solid #0d9488' } },
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' } }, 'Early Churn Rate (<6mo)'),
+                e('div', { style: { fontSize: '1.8rem', fontWeight: 800, color: '#0d9488' } }, '1 case'),
+                e('div', { style: { fontSize: '0.7rem', color: '#64748b' } }, 'Isolated \u2014 not systemic')
+              )
+            ),
+
+            // Executive-Level Churn Analysis
+            e('div', { className: 'card' },
+              e('div', { className: 'retention-header', style: { marginBottom: '16px' } },
+                e('h3', { className: 'section-title', style: { marginBottom: 0 } },
+                  e('span', { className: 'dot', style: { backgroundColor: maroon } }),
+                  'Executive Summary: Churn & Retention Analysis'
+                )
+              ),
+              e('div', { style: { display: 'flex', flexDirection: 'column', gap: '14px' } },
+                e('div', { style: { padding: '14px 16px', backgroundColor: '#f8fafc', borderRadius: '8px', borderLeft: '3px solid ' + teal } },
+                  e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.85rem', marginBottom: '4px' } }, 'Churn Timing'),
+                  e('div', { style: { fontSize: '0.8rem', color: '#475569', lineHeight: '1.5' } }, 'Inbound churn is not driven by early onboarding breakdowns. The majority of churn occurs between 12\u201318 months, suggesting lifecycle value perception and renewal positioning are the primary friction points.')
+                ),
+                e('div', { style: { padding: '14px 16px', backgroundColor: '#f8fafc', borderRadius: '8px', borderLeft: '3px solid ' + orange } },
+                  e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.85rem', marginBottom: '4px' } }, 'Revenue Lifespan'),
+                  e('div', { style: { fontSize: '0.8rem', color: '#475569', lineHeight: '1.5' } }, 'Average revenue lifespan across churned accounts is approximately 2 years. One early-stage churn case (Nicholas) represents isolated onboarding exposure, not systemic failure.')
+                ),
+                e('div', { style: { padding: '14px 16px', backgroundColor: '#f8fafc', borderRadius: '8px', borderLeft: '3px solid ' + maroon } },
+                  e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.85rem', marginBottom: '4px' } }, 'Portfolio Risk Profile'),
+                  e('div', { style: { fontSize: '0.8rem', color: '#475569', lineHeight: '1.5' } }, "The largest exposure risk sits within Jacob\u2019s portfolio due to volume concentration, while John demonstrates the strongest long-term durability profile.")
+                ),
+                e('div', { style: { padding: '14px 16px', backgroundColor: 'rgba(20,184,166,0.05)', borderRadius: '8px', border: '1px solid rgba(20,184,166,0.2)' } },
+                  e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.85rem', marginBottom: '8px' } }, '2026 Retention Strategy Focus'),
+                  e('div', { style: { display: 'flex', flexDirection: 'column', gap: '6px' } },
+                    e('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#475569' } },
+                      e('span', { style: { width: '6px', height: '6px', borderRadius: '50%', backgroundColor: teal, flexShrink: 0 } }),
+                      'Renewal reinforcement at 10\u201314 months'
+                    ),
+                    e('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#475569' } },
+                      e('span', { style: { width: '6px', height: '6px', borderRadius: '50%', backgroundColor: teal, flexShrink: 0 } }),
+                      'Proactive lifecycle value audits'
+                    ),
+                    e('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#475569' } },
+                      e('span', { style: { width: '6px', height: '6px', borderRadius: '50%', backgroundColor: teal, flexShrink: 0 } }),
+                      'Targeted stabilization of mid-tenure accounts'
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        // Retention by AM Tab
+        activeTab === 'retention by am' && e('div', null,
+
+          // DSM Performance Overview - moved to top
+          e('div', { className: 'card', style: { marginBottom: '20px' } },
+            e('div', { className: 'retention-header' },
+              e('h3', { className: 'section-title', style: { marginBottom: 0 } },
+                e('span', { className: 'dot', style: { backgroundColor: maroon } }),
+                'DSM Performance Overview'
+              ),
+              e('div', { style: { fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic' } }, 'Portfolio, tenure, churn history, and 2026 YTD retention')
+            ),
+            e('div', { style: { overflowX: 'auto' } },
+              e('table', { style: { width: '100%', minWidth: '700px' } },
+                e('thead', null,
+                  e('tr', { style: { borderBottom: '2px solid #e2e8f0' } },
+                    e('th', { style: { textAlign: 'left', padding: '10px 12px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'DSM'),
+                    e('th', { style: { textAlign: 'center', padding: '10px 12px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Clients'),
+                    e('th', { style: { textAlign: 'center', padding: '10px 12px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Avg Tenure'),
+                    e('th', { style: { textAlign: 'center', padding: '10px 12px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Cancels'),
+                    e('th', { style: { textAlign: 'center', padding: '10px 12px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Avg Mo to Cancel'),
+                    e('th', { style: { textAlign: 'center', padding: '10px 12px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Median Mo'),
+                    e('th', { style: { textAlign: 'center', padding: '10px 12px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', borderLeft: '2px solid #e2e8f0' } }, '2026 YTD Avg')
+                  )
+                ),
+                e('tbody', null,
+                  cancelByDsmData.map(function(row, idx) {
+                    var tenureColor = row.avgYears === null ? '#94a3b8' : row.avgYears >= 3 ? '#0d9488' : row.avgYears >= 1 ? '#475569' : '#d97706';
+                    var cancelColor = row.avgMonths === null ? '#94a3b8' : row.avgMonths >= 18 ? '#0d9488' : row.avgMonths >= 12 ? '#475569' : '#d97706';
+                    var medianColor = row.medianMonths === null ? '#94a3b8' : row.medianMonths >= 18 ? '#0d9488' : row.medianMonths >= 12 ? '#475569' : '#d97706';
+                    var ytdColor = row.ytd2026 === null ? '#94a3b8' : row.ytd2026 >= 100 ? '#0d9488' : row.ytd2026 >= 97 ? '#475569' : row.ytd2026 >= 95 ? '#d97706' : '#dc2626';
+                    return e('tr', { key: idx, style: { borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#f8fafc' : '#fff' } },
+                      e('td', { style: { padding: '10px 12px', fontWeight: 600, color: '#1e293b', fontSize: '0.85rem' } }, row.name),
+                      e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 600, color: row.clients ? '#1e293b' : '#94a3b8' } }, row.clients || '\u2014'),
+                      e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 700, color: tenureColor } }, row.avgYears ? row.avgYears.toFixed(2) + ' yrs' : '\u2014'),
+                      e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 700, color: row.cancels > 0 ? '#1e293b' : '#94a3b8' } }, row.cancels || '\u2014'),
+                      e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 700, color: cancelColor } }, row.avgMonths ? row.avgMonths.toFixed(1) + ' mo' : '\u2014'),
+                      e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 700, color: medianColor } }, row.medianMonths ? row.medianMonths.toFixed(1) + ' mo' : '\u2014'),
+                      e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 800, color: ytdColor, borderLeft: '2px solid #f1f5f9', fontSize: '0.9rem' } }, row.ytd2026 ? row.ytd2026.toFixed(1) + '%' : '\u2014')
+                    );
+                  })
+                ),
+                e('tfoot', null,
+                  e('tr', { style: { borderTop: '2px solid #cbd5e1', backgroundColor: '#f1f5f9' } },
+                    e('td', { style: { padding: '10px 12px', fontWeight: 700, color: '#1e293b' } }, 'Portfolio Avg'),
+                    e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 700, color: '#1e293b' } }, '211'),
+                    e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 700, color: '#1e293b' } }, '2.1 yrs'),
+                    e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 700, color: '#1e293b' } }, '17'),
+                    e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 700, color: '#1e293b' } }, '21.8 mo'),
+                    e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 700, color: '#1e293b' } }, '18.9 mo'),
+                    e('td', { style: { textAlign: 'center', padding: '10px 12px', fontWeight: 800, color: '#0d9488', borderLeft: '2px solid #e2e8f0', fontSize: '0.9rem' } }, '96.8%')
+                  )
+                )
+              )
+            )
+          ),
+
+          e('div', { className: 'grid-2', style: { gap: '24px' } },
+            // 2026 Card (Priority)
+            e('div', { className: 'card' },
+              e('div', { className: 'retention-header' },
+                e('h3', { className: 'section-title', style: { marginBottom: 0 } }, e('span', { className: 'dot', style: { backgroundColor: orange } }), '2026 Retention by Account Manager'),
+                e('div', { className: 'retention-team-avg' }, 'Team Average: ', e('strong', null, '97.6%'))
+              ),
+              e('div', { className: 'retention-list' },
+                e('div', { className: 'retention-row' },
+                  e('span', { className: 'retention-name' }, 'Henry Pfeil'),
+                  e('span', { className: 'retention-rate excellent' }, '102.3%'),
+                  e('span', { className: 'retention-breakdown' }, 'Jan: 101.3%, Feb: 103.4%')
+                ),
+                e('div', { className: 'retention-row' },
+                  e('span', { className: 'retention-name' }, 'Jacob Yarbrough'),
+                  e('span', { className: 'retention-rate alert' }, '95.96%'),
+                  e('span', { className: 'retention-breakdown' }, 'Jan: 100.4%, Feb: 90.9%, Mar: 95.02%, Apr: 97.5%')
+                ),
+                e('div', { className: 'retention-row' },
+                  e('span', { className: 'retention-name' }, 'John Halcomb'),
+                  e('span', { className: 'retention-rate alert' }, '95.89%'),
+                  e('span', { className: 'retention-breakdown' }, 'Jan: 100.1%, Feb: 90%, Mar: 100%, Apr: 93.45%')
+                ),
+                e('div', { className: 'retention-row' },
+                  e('span', { className: 'retention-name' }, 'Brian Hoffman'),
+                  e('span', { className: 'retention-rate alert' }, '94.05%'),
+                  e('span', { className: 'retention-breakdown' }, 'Jan: 88.3%, Feb: 99.8%')
+                )
+              )
+            ),
+            // 2025 Card (Reference)
+            e('div', { className: 'card' },
+              e('div', { className: 'retention-header' },
+                e('h3', { className: 'section-title', style: { marginBottom: 0 } }, e('span', { className: 'dot', style: { backgroundColor: teal } }), '2025 Retention by Account Manager'),
+                e('div', { className: 'retention-team-avg' }, 'Team Average: ', e('strong', null, '97.9%'))
+              ),
+              e('div', { className: 'retention-list' },
+                e('div', { className: 'retention-row' },
+                  e('span', { className: 'retention-name' }, 'Jacob Yarbrough'),
+                  e('span', { className: 'retention-rate excellent' }, '98.75%')
+                ),
+                e('div', { className: 'retention-row' },
+                  e('span', { className: 'retention-name' }, 'Aaron Graue'),
+                  e('span', { className: 'retention-rate excellent' }, '98.3%')
+                ),
+                e('div', { className: 'retention-row' },
+                  e('span', { className: 'retention-name' }, 'Brian Hoffman'),
+                  e('span', { className: 'retention-rate good' }, '97.9%')
+                ),
+                e('div', { className: 'retention-row' },
+                  e('span', { className: 'retention-name' }, 'John Halcomb'),
+                  e('span', { className: 'retention-rate warning' }, '96.8%')
+                ),
+                e('div', { className: 'retention-row inactive' },
+                  e('span', { className: 'retention-name' }, 'Dajah Ray'),
+                  e('span', { className: 'retention-rate warning' }, '96.7%'),
+                  e('span', { className: 'retention-note' }, 'no longer in role')
+                ),
+                e('div', { className: 'retention-row inactive' },
+                  e('span', { className: 'retention-name' }, 'Bryan Dykes'),
+                  e('span', { className: 'retention-rate alert' }, '95.5%'),
+                  e('span', { className: 'retention-note' }, 'no longer in role')
+                ),
+                e('div', { className: 'retention-row' },
+                  e('span', { className: 'retention-name' }, 'Henry Pfeil'),
+                  e('span', { className: 'retention-rate na' }, 'N/A'),
+                  e('span', { className: 'retention-note' }, 'Started in November')
+                )
+              )
+            )
+          ),
+
+          // Cancel Risk by Account Manager
+          e('div', { className: 'card', style: { marginTop: '20px' } },
+            e('div', { className: 'retention-header' },
+              e('h3', { className: 'section-title', style: { marginBottom: 0 } },
+                e('span', { className: 'dot', style: { backgroundColor: orange } }),
+                'Cancel Risk by Account Manager'
+              )
+            ),
+            e('table', { style: { width: '100%' } },
+              e('thead', null,
+                e('tr', { style: { borderBottom: '2px solid #e2e8f0' } },
+                  e('th', { style: { textAlign: 'left', padding: '10px 16px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Account Manager'),
+                  e('th', { style: { textAlign: 'center', padding: '10px 16px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Accounts at Risk'),
+                  e('th', { style: { textAlign: 'center', padding: '10px 16px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Total MRR at Risk'),
+                  e('th', { style: { textAlign: 'center', padding: '10px 16px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Avg Chance of Cancel')
+                )
+              ),
+              e('tbody', null,
+                [
+                  { name: 'Matt Gilmore', accounts: 18, mrr: 34750, chance: 20 },
+                  { name: 'Brian Hoffman', accounts: 11, mrr: 32259, chance: 33 },
+                  { name: 'Henry Pfeil', accounts: 10, mrr: 30971, chance: 38 },
+                  { name: 'John Halcomb', accounts: 7, mrr: 18130, chance: 20 },
+                  { name: 'Aaron Graue', accounts: 7, mrr: 12727, chance: 18 },
+                  { name: 'Jacob Yarbrough', accounts: 4, mrr: 11275, chance: 44 },
+                  { name: 'Anna Walschleger', accounts: 1, mrr: 1545, chance: 25 }
+                ].map(function(row, idx) {
+                  var chanceColor = row.chance >= 40 ? '#dc2626' : row.chance >= 30 ? '#d97706' : '#475569';
+                  return e('tr', { key: idx, style: { borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#f8fafc' : '#fff' } },
+                    e('td', { style: { padding: '10px 16px', fontWeight: 600, color: '#1e293b', fontSize: '0.85rem' } }, row.name),
+                    e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 700, color: '#1e293b' } }, row.accounts),
+                    e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 700, color: '#1e293b' } }, '$' + row.mrr.toLocaleString()),
+                    e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 700, color: chanceColor } }, row.chance + '%')
+                  );
+                })
+              ),
+              e('tfoot', null,
+                e('tr', { style: { borderTop: '2px solid #cbd5e1', backgroundColor: '#f1f5f9' } },
+                  e('td', { style: { padding: '10px 16px', fontWeight: 700, color: '#1e293b' } }, 'Total'),
+                  e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 700, color: '#1e293b' } }, '58'),
+                  e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 700, color: '#1e293b' } }, '$141,657'),
+                  e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 700, color: '#475569' } }, '28% avg')
+                )
+              )
+            )
+          ),
+
+          // January MRM Completion
+          e('div', { className: 'card', style: { marginTop: '20px' } },
+            e('div', { className: 'mrm-completion' },
+              e('span', { className: 'mrm-label' }, 'January MRM Completion'),
+              e('span', { className: 'mrm-value' }, '91.2%')
+            )
+          )
+        ),
+
+        // Implementation Performance Tab
+        activeTab === 'implementation performance' && e('div', null,
+
+          // Website Launch Velocity - top position
+          e('div', { style: { background: '#0f172a', borderRadius: '12px', overflow: 'hidden', marginBottom: '20px', boxShadow: '0 4px 24px rgba(0,0,0,0.15)' } },
+            e('div', { style: { height: '3px', background: 'linear-gradient(90deg, #0d9488, #0d948888, transparent)' } }),
+            e('div', { style: { padding: '22px 28px' } },
+              e('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '8px' } },
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.18em' } }, 'Website Launch Velocity'),
+                e('div', { style: { fontSize: '0.7rem', fontWeight: 600, color: '#0d9488', backgroundColor: '#0d948818', padding: '5px 16px', borderRadius: '4px', letterSpacing: '0.04em' } }, 'Stable Operating Band (80\u201390 Days)')
+              ),
+              e('div', { style: { fontSize: '1.0rem', fontWeight: 500, color: '#cbd5e1', marginBottom: '16px' } },
+                'Current velocity: ',
+                e('span', { style: { color: '#e2e8f0', fontWeight: 700 } }, 'On Track'),
+                e('span', { style: { color: '#94a3b8', fontWeight: 400 } }, ' \u2014 3-month avg improving vs baseline')
+              ),
+              e('div', { style: { height: '1px', backgroundColor: '#1e293b', marginBottom: '18px' } }),
+              e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0' } },
+                e('div', { style: { paddingRight: '20px' } },
+                  e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Rolling 14-Mo Avg'),
+                  e('div', { style: { fontSize: '1.5rem', fontWeight: 800, color: '#cbd5e1', letterSpacing: '-0.02em' } }, '90.9'),
+                  e('div', { style: { fontSize: '0.6rem', color: '#475569', marginTop: '2px' } }, 'days')
+                ),
+                e('div', { style: { borderLeft: '1px solid #1e293b', paddingLeft: '20px' } },
+                  e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Last 3-Mo Avg'),
+                  e('div', { style: { fontSize: '1.5rem', fontWeight: 800, color: '#0d9488', letterSpacing: '-0.02em' } }, '87.1'),
+                  e('div', { style: { fontSize: '0.6rem', color: '#475569', marginTop: '2px' } }, 'days \u2014 improving')
+                ),
+                e('div', { style: { borderLeft: '1px solid #1e293b', paddingLeft: '20px' } },
+                  e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Best Month'),
+                  e('div', { style: { fontSize: '1.5rem', fontWeight: 800, color: '#0d9488', letterSpacing: '-0.02em' } }, '65'),
+                  e('div', { style: { fontSize: '0.6rem', color: '#475569', marginTop: '2px' } }, 'days \u2014 Aug 2025')
+                ),
+                e('div', { style: { borderLeft: '1px solid #1e293b', paddingLeft: '20px' } },
+                  e('div', { style: { fontSize: '0.58rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' } }, 'Worst Month'),
+                  e('div', { style: { fontSize: '1.5rem', fontWeight: 800, color: '#d97706', letterSpacing: '-0.02em' } }, '128'),
+                  e('div', { style: { fontSize: '0.6rem', color: '#475569', marginTop: '2px' } }, 'days \u2014 Jun 2025')
+                )
+              )
+            )
+          ),
+
+          // KPI + Activation Risk side by side
+          e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginBottom: '20px' } },
+            e('div', { className: 'card', style: { textAlign: 'center', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' } },
+              e('div', { style: { fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' } }, 'Active Implementations'),
+              e('div', { style: { fontSize: '2rem', fontWeight: 800, color: '#1e293b' } }, '20'),
+              e('div', { style: { fontSize: '0.75rem', color: '#64748b' } }, 'Combined across both DPMs')
+            ),
+            e('div', { className: 'card' },
+              e('h3', { className: 'section-title', style: { marginBottom: '12px' } },
+                e('span', { className: 'dot', style: { backgroundColor: teal } }),
+                'Activation Risk'
+              ),
+              e('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+                e('div', { style: { display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', backgroundColor: 'rgba(13,148,136,0.05)', borderRadius: '8px', borderLeft: '3px solid #0d9488' } },
+                  e('span', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#0d9488', backgroundColor: '#0d948818', padding: '2px 8px', borderRadius: '4px' } }, 'LOW'),
+                  e('span', { style: { fontSize: '0.78rem', color: '#1e293b', fontWeight: 500 } }, 'No systemic delay')
+                ),
+                e('div', { style: { display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', backgroundColor: 'rgba(217,119,6,0.04)', borderRadius: '8px', borderLeft: '3px solid #d97706' } },
+                  e('span', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#d97706', backgroundColor: '#d9770618', padding: '2px 8px', borderRadius: '4px' } }, 'OPP'),
+                  e('span', { style: { fontSize: '0.78rem', color: '#1e293b', fontWeight: 500 } }, 'Moderate acceleration opportunity')
+                ),
+                e('div', { style: { display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', backgroundColor: 'rgba(13,148,136,0.05)', borderRadius: '8px', borderLeft: '3px solid #0d9488' } },
+                  e('span', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#0d9488', backgroundColor: '#0d948818', padding: '2px 8px', borderRadius: '4px' } }, 'LOW'),
+                  e('span', { style: { fontSize: '0.78rem', color: '#1e293b', fontWeight: 500 } }, 'No upward trend in cycle time')
+                )
+              )
+            )
+          ),
+
+          e('div', { className: 'card' },
+            e('div', { className: 'retention-header' },
+              e('h3', { className: 'section-title', style: { marginBottom: 0 } },
+                e('span', { className: 'dot', style: { backgroundColor: orange } }),
+                'Digital Project Manager Performance'
+              )
+            ),
+            e('div', { className: 'retention-list' },
+              dpmData.map(function(d, i) {
+                return e('div', { key: i, style: { padding: '12px 0', borderBottom: i < dpmData.length - 1 ? '1px solid #f1f5f9' : 'none' } },
+                  e('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' } },
+                    e('span', { style: { fontWeight: 600, color: '#1e293b', fontSize: '0.95rem' } }, d.name),
+                    e('span', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', padding: '2px 8px', borderRadius: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' } }, '0 Churn')
+                  ),
+                  e('div', { style: { display: 'flex', gap: '16px', flexWrap: 'wrap' } },
+                    e('span', { style: { fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' } },
+                      'Active Implementations: ',
+                      e('strong', { style: { color: '#1e293b' } }, d.activeBuilds)
+                    ),
+                    e('span', { style: { fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' } },
+                      'Avg Days to Launch: ',
+                      e('strong', { style: { color: d.avgLaunchDays <= 60 ? '#16a34a' : '#ca8a04' } }, d.avgLaunchDays)
+                    ),
+                    e('span', { style: { fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' } },
+                      'On-Time %: ',
+                      e('strong', { style: { color: d.onTimeRate >= 95 ? '#16a34a' : d.onTimeRate >= 90 ? '#ca8a04' : '#dc2626' } }, d.onTimeRate + '%')
+                    ),
+                    e('span', { style: { fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' } },
+                      'Post-Launch Handoff: ',
+                      e('strong', { style: { color: '#16a34a' } }, '\u2713')
+                    )
+                  )
+                );
+              })
+            )
+          ),
+
+          // Website Launch Velocity Table
+          e('div', { className: 'card', style: { marginTop: '20px' } },
+            e('div', { className: 'retention-header' },
+              e('h3', { className: 'section-title', style: { marginBottom: 0 } },
+                e('span', { className: 'dot', style: { backgroundColor: maroon } }),
+                'Website Launch Velocity \u2013 Last 12 Months'
+              )
+            ),
+            e('table', { style: { width: '100%' } },
+              e('thead', null,
+                e('tr', { style: { borderBottom: '2px solid #e2e8f0' } },
+                  e('th', { style: { textAlign: 'left', padding: '10px 16px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Month'),
+                  e('th', { style: { textAlign: 'center', padding: '10px 16px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Sites Launched'),
+                  e('th', { style: { textAlign: 'center', padding: '10px 16px', fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' } }, 'Avg Days to Launch')
+                )
+              ),
+              e('tbody', null,
+                launchVelocityData.map(function(row, idx) {
+                  var daysColor = row.flag === 'best' ? '#0d9488' : row.flag === 'worst' ? '#dc2626' : row.avgDays <= 85 ? '#0d9488' : row.avgDays <= 95 ? '#475569' : '#d97706';
+                  return e('tr', { key: idx, style: { borderBottom: '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#f8fafc' : '#fff' } },
+                    e('td', { style: { padding: '10px 16px', fontWeight: 500, color: '#1e293b' } }, row.month),
+                    e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 600, color: '#1e293b' } }, row.sites),
+                    e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 700, color: daysColor } },
+                      row.avgDays.toFixed(1),
+                      row.flag ? e('span', { style: { display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: row.flag === 'best' ? '#0d9488' : '#dc2626', marginLeft: '8px', verticalAlign: 'middle' } }) : null
+                    )
+                  );
+                })
+              ),
+              e('tfoot', null,
+                e('tr', { style: { borderTop: '2px solid #cbd5e1', backgroundColor: '#f1f5f9' } },
+                  e('td', { style: { padding: '10px 16px', fontWeight: 700, color: '#1e293b' } }, 'Rolling Avg'),
+                  e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 700, color: '#1e293b' } }, '63 total'),
+                  e('td', { style: { textAlign: 'center', padding: '10px 16px', fontWeight: 700, color: '#1e293b' } }, '90.9')
+                )
+              )
+            )
+          )
+        ),
+        activeTab === 'sales summary' && e('div', null,
+          e('div', { className: 'grid-2', style: { marginBottom: '16px' } },
+            e('div', { className: 'card' },
+              e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: teal } }), 'What Went Right'),
+              e('div', { className: 'insight-card', style: { backgroundColor: 'rgba(13,148,136,0.05)', border: '1px solid rgba(13,148,136,0.15)' } },
+                e('h4', { className: 'insight-title' }, 'MRR Momentum'),
+                e('p', { className: 'insight-text' }, "We were at $6,500 MRR closed on 1/9, and have since increased to $25,300 MRR, demonstrating stronger closing velocity and improved month-end execution.")
+              ),
+              e('div', { className: 'insight-card', style: { backgroundColor: 'rgba(13,148,136,0.05)', border: '1px solid rgba(13,148,136,0.15)' } },
+                e('h4', { className: 'insight-title' }, 'Pipeline Activity Increased Meaningfully'),
+                e('p', { className: 'insight-text' }, 'We issued 16 proposals this month, reflecting strong engagement across the sales process and sustained pipeline movement.')
+              ),
+              e('div', { className: 'insight-card', style: { backgroundColor: 'rgba(13,148,136,0.05)', border: '1px solid rgba(13,148,136,0.15)' } },
+                e('h4', { className: 'insight-title' }, 'Referral Channels Are Driving High-Quality Growth'),
+                e('p', { className: 'insight-text' }, 'Employee and client referrals generated $11,000 (69%) of total MRR with close rates of 37.5% and 66.7%.')
+              )
+            ),
+            e('div', { className: 'card' },
+              e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: orange } }), 'Concerns'),
+              e('div', { className: 'insight-card', style: { backgroundColor: 'rgba(244,111,10,0.05)', border: '1px solid rgba(244,111,10,0.15)' } },
+                e('h4', { className: 'insight-title' }, 'Digital Audit Conversion Is Underperforming'),
+                e('p', { className: 'insight-text' }, 'Digital Audit leads produced 52 pitches and only 1 closed deal (1.9% close rate). We are tightening qualification criteria this week to filter low-intent leads before they reach sales.')
+              ),
+              e('div', { className: 'insight-card', style: { backgroundColor: 'rgba(244,111,10,0.05)', border: '1px solid rgba(244,111,10,0.15)' } },
+                e('div', { className: 'insight-header' },
+                  e('h4', { className: 'insight-title' }, 'Project Revenue'),
+                  e('span', { className: 'insight-metric', style: { color: orange } }, '$11.6k vs $21.2k')
+                ),
+                e('p', { className: 'insight-text' }, 'Project revenue at 55% of January level. We are reallocating sales effort toward referral pipeline and existing client upsells starting next week.')
+              )
+            )
+          ),
+          e('div', { className: 'exec-outcomes', style: { marginTop: 16 } },
+            e('h4', null, 'Expected Outcomes'),
+            e('ul', null,
+              e('li', null, e('span', { style: { color: teal, marginRight: '6px' } }, '✓'), 'Higher revenue predictability'),
+              e('li', null, e('span', { style: { color: teal, marginRight: '6px' } }, '✓'), 'Improved sales capacity utilization'),
+              e('li', null, e('span', { style: { color: teal, marginRight: '6px' } }, '✓'), 'Reduced low-quality inbound volume'),
+              e('li', null, e('span', { style: { color: teal, marginRight: '6px' } }, '✓'), 'Clear accountability for revenue execution')
+            )
+          ),
+          e('div', { className: 'card', style: { marginTop: 16 } },
+            e('h3', { className: 'section-title' }, e('span', { className: 'dot', style: { backgroundColor: maroon } }), 'Execution Plan to Hit Revenue Targets'),
+            e('p', { className: 'exec-subtitle' }, 'Objective: Close the remaining $' + gapToGoal.toLocaleString() + ' gap to hit $' + mrrGoal.toLocaleString() + ' MRR goal.'),
+            e('div', { className: 'deals-needed-row' },
+              e('span', { className: 'deals-needed-label' }, 'To close the gap:'),
+              e('span', { className: 'deals-needed-item' },
+                e('strong', null, referralDealsNeeded),
+                ' referral deals @ $' + avgReferralDealSize.toLocaleString() + ' avg'
+              ),
+              e('span', { className: 'deals-needed-sep' }, 'or'),
+              e('span', { className: 'deals-needed-item' },
+                e('strong', null, transferDealsNeeded),
+                ' transfer deals @ $' + avgTransferDealSize.toLocaleString() + ' avg'
+              ),
+              e('span', { className: 'deals-needed-sep' }, 'or'),
+              e('span', { className: 'deals-needed-item' },
+                e('strong', null, auditDealsNeeded),
+                ' audit deals @ $' + avgAuditDealSize.toLocaleString() + ' avg'
+              )
+            ),
+            e('div', { className: 'exec-grid' },
+              e('div', { className: 'exec-item' },
+                e('div', { className: 'exec-num', style: { backgroundColor: 'rgba(140,8,43,0.15)', color: maroon } }, '1'),
+                e('div', { className: 'exec-content' },
+                  e('h4', null, 'Scale Referral Revenue'),
+                  e('ul', null,
+                    e('li', null, 'PSMs will request 2 referrals per client touchpoint starting this week.'),
+                    e('li', null, 'Doug to run referral blitz with top 10 accounts by Friday.')
+                  ),
+                  e('div', { className: 'exec-kpi' }, e('span', null, 'KPI: '), '≥ 50% of inbound MRR from referrals')
+                )
+              ),
+              e('div', { className: 'exec-item' },
+                e('div', { className: 'exec-num', style: { backgroundColor: 'rgba(244,111,10,0.15)', color: orange } }, '2'),
+                e('div', { className: 'exec-content' },
+                  e('h4', null, 'Correct Audit Lead Qualification'),
+                  e('ul', null,
+                    e('li', null, 'Adding budget and timeline questions to audit intake form today.'),
+                    e('li', null, 'Rejecting leads under $1,500 MRR potential before pitch.')
+                  ),
+                  e('div', { className: 'exec-kpi' }, e('span', null, 'KPI: '), 'Audit close rate ≥ 5%')
+                )
+              ),
+              e('div', { className: 'exec-item' },
+                e('div', { className: 'exec-num', style: { backgroundColor: 'rgba(13,148,136,0.15)', color: teal } }, '3'),
+                e('div', { className: 'exec-content' },
+                  e('h4', null, 'Restore Project Revenue Contribution'),
+                  e('ul', null,
+                    e('li', null, 'PSMs to identify 1 upsell opportunity per account review.')
+                  ),
+                  e('div', { className: 'exec-kpi' }, e('span', null, 'KPI: '), 'Monthly project revenue ≥ $18K')
+                )
+              ),
+              e('div', { className: 'exec-item' },
+                e('div', { className: 'exec-num', style: { backgroundColor: 'rgba(244,111,10,0.15)', color: orange } }, '4'),
+                e('div', { className: 'exec-content' },
+                  e('h4', null, 'Maximize Month-End Close Velocity'),
+                  e('ul', null,
+                    e('li', null, 'Daily pipeline standup at 9am through Feb 14.'),
+                    e('li', null, 'All proposals over $2K get VP follow-up within 24 hours.')
+                  ),
+                  e('div', { className: 'exec-kpi' }, e('span', null, 'KPI: '), 'Month-end MRR ≥ $20K')
+                )
+              ),
+              e('div', { className: 'exec-item' },
+                e('div', { className: 'exec-num', style: { backgroundColor: 'rgba(13,148,136,0.15)', color: teal } }, '5'),
+                e('div', { className: 'exec-content' },
+                  e('h4', null, 'Increase Average Deal Size'),
+                  e('ul', null,
+                    e('li', null, 'Leverage Paid, Social Management, Backlinking, and Collateral add-ons.'),
+                    e('li', null, 'Bundle services on every proposal to maximize contract value.')
+                  ),
+                  e('div', { className: 'exec-kpi' }, e('span', null, 'KPI: '), 'Avg deal size ≥ $3K')
+                )
+              )
+            )
+          )
+        ),
+
+        // Wins & Improvements Tab
+        activeTab === 'wins & improvements' && e('div', null,
+
+          // Header
+          e('div', { style: { background: 'linear-gradient(135deg, #1e293b, #334155)', borderRadius: '12px', padding: '20px 28px', marginBottom: '24px' } },
+            e('div', { style: { fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '6px' } }, 'Inbound Performance Review \u2013 February 2026'),
+            e('div', { style: { fontSize: '1.0rem', color: '#e2e8f0', lineHeight: '1.5' } }, 'Retention and Implementation performance. What\u2019s working, what needs attention, and where to focus next.')
+          ),
+
+          // Two-column layout: Wins | Improvements
+          e('div', { className: 'grid-2', style: { gap: '20px', marginBottom: '20px' } },
+
+            // WINS column
+            e('div', { className: 'card', style: { borderTop: '4px solid ' + teal } },
+              e('h3', { className: 'section-title', style: { marginBottom: '16px' } },
+                e('span', { className: 'dot', style: { backgroundColor: teal } }),
+                'What\u2019s Going Well'
+              ),
+
+              // Retention wins
+              e('div', { style: { marginBottom: '16px' } },
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' } }, 'Retention'),
+                e('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(13,148,136,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + teal } },
+                    e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', marginBottom: '3px' } }, 'Rolling Retention Above Target'),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, '97.7% rolling 3-month average vs 97.5% target. Variance is +0.2% \u2014 retention is operationally stable.')
+                  ),
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(13,148,136,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + teal } },
+                    e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', marginBottom: '3px' } }, 'March Retention Outlook is Strong'),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, '98.9% projected for March with only -$5,975 net impact. This would be the best retention month in 2026 so far.')
+                  ),
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(13,148,136,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + teal } },
+                    e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', marginBottom: '3px' } }, 'Early Churn Is Not Systemic'),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, 'Only 1 case of churn under 6 months. Onboarding is working \u2014 churn is a lifecycle issue, not an implementation problem.')
+                  )
+                )
+              ),
+
+              // Implementation wins
+              e('div', null,
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' } }, 'Implementation'),
+                e('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(13,148,136,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + teal } },
+                    e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', marginBottom: '3px' } }, 'DPM On-Time Launch Rates High'),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, 'Nicholas at 92% and Mariah at 95% on-time. 20 active builds in progress with zero churn attribution to implementation.')
+                  ),
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(13,148,136,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + teal } },
+                    e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', marginBottom: '3px' } }, 'Henry Pfeil Portfolio Growing'),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, '102.3% retention rate in 2026 \u2014 actively expanding his portfolio. Strong performance from a newer DSM.')
+                  ),
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(13,148,136,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + teal } },
+                    e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', marginBottom: '3px' } }, 'Launch Velocity Stable'),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, 'Last 3-month avg of 87.1 days is below the 14-month baseline of 90.9 days. No systemic delays and no upward trend in cycle time.')
+                  )
+                )
+              )
+            ),
+
+            // IMPROVEMENTS column
+            e('div', { className: 'card', style: { borderTop: '4px solid ' + orange } },
+              e('h3', { className: 'section-title', style: { marginBottom: '16px' } },
+                e('span', { className: 'dot', style: { backgroundColor: orange } }),
+                'Where We Need to Improve'
+              ),
+
+              // Retention improvements
+              e('div', { style: { marginBottom: '16px' } },
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' } }, 'Retention'),
+                e('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(244,111,10,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + orange } },
+                    e('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' } },
+                      e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem' } }, 'February Retention Dipped'),
+                      e('span', { style: { fontSize: '0.7rem', fontWeight: 700, color: '#dc2626', backgroundColor: 'rgba(220,38,38,0.1)', padding: '1px 8px', borderRadius: '8px' } }, '96.6%')
+                    ),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, 'Lowest single-month retention in 2026. Lost $18,694 in revenue \u2014 the largest single-month churn impact this year.')
+                  ),
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(244,111,10,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + orange } },
+                    e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', marginBottom: '3px' } }, '12\u201318 Month Churn Window'),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, 'Peak churn concentration at 12\u201318 months suggests renewal positioning and lifecycle value communication need proactive intervention before that window.')
+                  ),
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(244,111,10,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + orange } },
+                    e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', marginBottom: '3px' } }, 'DSM Portfolio Risk Concentration'),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, 'Jacob (95.96%), John (95.89%), and Brian (94.05%) all tracking below 96% retention in 2026. These three portfolios represent the majority of churn exposure.')
+                  )
+                )
+              ),
+
+              // Implementation improvements
+              e('div', null,
+                e('div', { style: { fontSize: '0.65rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' } }, 'Implementation'),
+                e('div', { style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+                  e('div', { style: { padding: '12px 14px', backgroundColor: 'rgba(244,111,10,0.05)', borderRadius: '8px', borderLeft: '3px solid ' + orange } },
+                    e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.8rem', marginBottom: '3px' } }, 'Moderate Acceleration Opportunity'),
+                    e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, 'Launch velocity is stable but not improving. Best month was 65 days (Aug 2025) vs current 87-day average \u2014 room to tighten further and get clients live faster.')
+                  )
+                )
+              )
+            )
+          ),
+
+          // Bottom: Focus Areas
+          e('div', { className: 'card', style: { borderTop: '4px solid ' + maroon } },
+            e('h3', { className: 'section-title', style: { marginBottom: '16px' } },
+              e('span', { className: 'dot', style: { backgroundColor: maroon } }),
+              'Priority Focus Areas for March'
+            ),
+            e('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' } },
+              e('div', { style: { padding: '16px', backgroundColor: 'rgba(140,8,43,0.04)', borderRadius: '8px', border: '1px solid rgba(140,8,43,0.12)' } },
+                e('div', { style: { fontSize: '1.2rem', fontWeight: 800, color: maroon, marginBottom: '4px' } }, '1'),
+                e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.85rem', marginBottom: '6px' } }, 'Retention Reinforcement at 10\u201314 Months'),
+                e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, 'Proactive lifecycle value audits for accounts approaching the 12\u201318 month churn window. Stabilize mid-tenure portfolios before risk materializes.')
+              ),
+              e('div', { style: { padding: '16px', backgroundColor: 'rgba(140,8,43,0.04)', borderRadius: '8px', border: '1px solid rgba(140,8,43,0.12)' } },
+                e('div', { style: { fontSize: '1.2rem', fontWeight: 800, color: maroon, marginBottom: '4px' } }, '2'),
+                e('div', { style: { fontWeight: 700, color: '#1e293b', fontSize: '0.85rem', marginBottom: '6px' } }, 'Stabilize At-Risk DSM Portfolios'),
+                e('div', { style: { fontSize: '0.75rem', color: '#475569', lineHeight: '1.5' } }, 'Jacob, John, and Brian all below 96% YTD. Conduct portfolio reviews and identify accounts showing early churn signals for targeted intervention.')
+              )
+            )
+          )
+        ),
+
+        // Footer
+        e('div', { className: 'footer' },
+          e('span', null, 'Abstrakt Marketing Group • The Business Growth Company'),
+          e('span', null, 'Powered by INBOUND SDR')
+        )
+      );
+    }
+
+    ReactDOM.render(e(App), document.getElementById('root'));
+  </script>
+</body>
+</html>
