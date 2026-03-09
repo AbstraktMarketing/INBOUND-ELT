@@ -45,7 +45,7 @@ body { font-family: Barlow, sans-serif; }
     /* Primary KPI Cards */
     .kpi-primary { padding: 16px 20px !important; display: flex; flex-direction: column; height: 100%; }
     .kpi-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-    .kpi-icon { display: flex; align-items: center; opacity: 0.8; }
+    .kpi-icon { display: flex; align-items: center; opacity: 0.8; color: #1e293b; }
     .kpi-label { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; }
     .kpi-hero { font-size: 2.5rem; font-weight: 800; line-height: 1; margin-bottom: 4px; letter-spacing: -0.02em; color: #1e293b; }
     .kpi-meta { font-size: 0.8rem; color: #64748b; font-weight: 500; margin-bottom: 8px; }
@@ -91,7 +91,7 @@ body { font-family: Barlow, sans-serif; }
     /* Secondary KPI Cards */
     .kpi-secondary { padding: 14px 16px !important; display: flex; flex-direction: column; height: 100%; }
     .kpi-header-sm { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-    .kpi-icon-sm { display: flex; align-items: center; opacity: 0.7; }
+    .kpi-icon-sm { display: flex; align-items: center; opacity: 0.7; color: #1e293b; }
     .kpi-icon-sm svg { width: 14px; height: 14px; }
     .kpi-label-sm { font-size: 0.65rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; }
     .kpi-value-sm { font-size: 1.75rem; font-weight: 800; line-height: 1.1; margin-bottom: 2px; color: #1e293b; }
@@ -667,7 +667,7 @@ function Dashboard() {
 
   // MRR Goal Calculations
   const mrrGoal = 30000;
-  const currentMrr = 25300;
+  const currentMrr = 22091;
   const sellingDaysLeft = 4;
   const gapToGoal = mrrGoal - currentMrr;
   const dailyPaceNeeded = Math.ceil(gapToGoal / sellingDaysLeft);
@@ -683,7 +683,7 @@ function Dashboard() {
   const transferDealsNeeded = Math.ceil(gapToGoal / avgTransferDealSize);
 
   // Close Rate Calculation
-  const totalPitches = 82; // February pitches
+  const totalPitches = 10; // March pitches
   const totalWon = 8; // February deals won
   const overallCloseRate = (totalWon / totalPitches * 100).toFixed(1);
 
@@ -738,10 +738,14 @@ function Dashboard() {
     closeRate: 0
   }];
   const pitchData = [{
-    month: 'Feb',
-    count: 19,
+    month: 'Mar',
+    count: 10,
     change: null,
     current: true
+  }, {
+    month: 'Feb',
+    count: 63,
+    change: -23
   }, {
     month: 'Jan',
     count: 82,
@@ -775,40 +779,63 @@ function Dashboard() {
     pitches: 82
   }, {
     month: 'Feb',
-    pitches: 19
+    pitches: 63
+  }, {
+    month: 'Mar',
+    pitches: 10
   }];
 
-  // Close Rate by Source - Last 120 Days
+  // Close Rate by Source - 2026 YTD
   const closeRate120Days = [{
+    name: 'Revenue Transfer',
+    rate: 50.0,
+    pitches: 4,
+    won: 2
+  }, {
     name: 'Customer Referral',
-    rate: 60.0,
-    pitches: 15,
-    won: 9
+    rate: 28.6,
+    pitches: 7,
+    won: 2
   }, {
     name: 'Employee Referral',
-    rate: 60.0,
-    pitches: 30,
-    won: 18
+    rate: 18.2,
+    pitches: 11,
+    won: 2
   }, {
     name: 'Self-Sourced',
-    rate: 40.0,
-    pitches: 5,
-    won: 2
+    rate: 16.7,
+    pitches: 6,
+    won: 1
   }, {
     name: 'Upsell',
-    rate: 17.9,
-    pitches: 28,
-    won: 5
+    rate: 23.1,
+    pitches: 13,
+    won: 3
   }, {
     name: 'Web Lead',
-    rate: 14.3,
+    rate: 21.4,
     pitches: 14,
-    won: 2
+    won: 3
   }, {
-    name: 'Digital Audit',
-    rate: 6.0,
-    pitches: 182,
-    won: 11
+    name: 'AMG 90 Day Client',
+    rate: 3.0,
+    pitches: 99,
+    won: 3
+  }, {
+    name: 'Cold Calling',
+    rate: 0,
+    pitches: 1,
+    won: 0
+  }, {
+    name: 'Email',
+    rate: 0,
+    pitches: 1,
+    won: 0
+  }, {
+    name: 'LinkedIn',
+    rate: 0,
+    pitches: 1,
+    won: 0
   }];
 
   // KPI Icons (Lucide-style line icons)
@@ -904,19 +931,19 @@ function Dashboard() {
 
   // Close Rate by Source - February Sales
   const closeRateData = [{
-    name: 'Client Referral',
-    rate: 66.7,
-    pitches: 3,
+    name: 'Customer Referral',
+    rate: 100,
+    pitches: 2,
     won: 2
   }, {
     name: 'Employee Referral',
-    rate: 33.3,
-    pitches: 9,
-    won: 3
+    rate: 40,
+    pitches: 5,
+    won: 2
   }, {
     name: 'Upsell',
-    rate: 25,
-    pitches: 4,
+    rate: 12.5,
+    pitches: 8,
     won: 1
   }, {
     name: 'Web Lead',
@@ -925,127 +952,118 @@ function Dashboard() {
     won: 1
   }, {
     name: 'Self-Sourced',
-    rate: 16.7,
-    pitches: 6,
+    rate: 33.3,
+    pitches: 3,
     won: 1
   }, {
-    name: 'Digital Audit',
-    rate: 1.9,
-    pitches: 53,
+    name: 'Revenue Transfer',
+    rate: 33.3,
+    pitches: 3,
     won: 1
+  }, {
+    name: 'Cold Calling',
+    rate: 0,
+    pitches: 1,
+    won: 0
+  }, {
+    name: 'AMG 90 Day Client',
+    rate: 0,
+    pitches: 31,
+    won: 0
   }];
   const mrrDeals = [{
-    name: 'Print Imaging',
-    amount: 3500,
-    source: 'Employee Referral',
-    psm: 'James Leisinger',
-    vp: 'Ian Suire',
-    category: 'referral'
+    name: 'HatLaunch',
+    amount: 12000,
+    source: 'Web Lead',
+    psm: 'Doug Yocco / Adam Weber',
+    category: 'web'
   }, {
-    name: 'Nashville Machine Co.',
-    amount: 2750,
-    source: 'Executive Sales Referral from Michael Miller',
+    name: 'Dupree Security',
+    amount: 3250,
+    source: 'Revenue Transfer',
+    psm: 'Doug Yocco / Kayla Musante',
+    category: 'transfer'
+  }, {
+    name: 'Breaching Technologies',
+    amount: 3112,
+    source: 'Web Lead',
     psm: 'Doug Yocco',
-    category: 'referral'
+    category: 'web'
   }, {
-    name: 'Semper Fi Construction',
+    name: "Hamm's Construction",
     amount: 2500,
-    source: 'Inbound Referral - Mariah Lindsay',
-    psm: 'Doug Yocco',
-    category: 'referral'
-  }, {
-    name: 'Uncommon Farms',
-    amount: 2250,
-    source: 'Employee Referral',
-    psm: 'Doug Yocco / Zak Beible',
-    category: 'referral'
-  }, {
-    name: 'Campbell Security',
-    amount: 2000,
-    source: "Inbound Client Referral - Bartolino's",
-    psm: 'Doug Yocco',
-    category: 'referral'
-  }, {
-    name: 'Fire Extinguisher Service',
-    amount: 1500,
-    source: 'PSM Upsell',
-    psm: 'Jordan Berra',
-    vp: 'Andrew Wittmaier',
-    category: 'upsell'
-  }, {
-    name: 'White Glove Exotic',
-    amount: 1200,
-    source: 'Self-Sourced',
-    psm: 'Stephanie Wiley',
-    category: 'self'
-  }, {
-    name: 'Caltron Security',
-    amount: 350,
     source: 'Digital Audit',
     psm: 'Doug Yocco',
     category: 'audit'
+  }, {
+    name: 'Tower Digital',
+    amount: 2000,
+    source: 'Digital Audit',
+    psm: 'Doug Yocco',
+    category: 'audit'
+  }, {
+    name: 'Allied Construction',
+    amount: 1500,
+    source: 'Upsell',
+    psm: 'Doug Yocco / Adam Weber',
+    category: 'upsell'
+  }, {
+    name: 'Perfectly Placed',
+    amount: 350,
+    source: 'Employee Referral (Stephanie Bodine)',
+    psm: 'Doug Yocco',
+    category: 'referral'
   }];
   const projectDeals = [{
-    name: 'CBD Kratom',
-    amount: 3750,
-    source: 'Strategic Growth Advisory'
-  }, {
-    name: 'National Delivery Solutions',
-    amount: 2750,
-    source: 'Non-Recurring Revenue'
-  }, {
-    name: 'Failsafe Communications',
-    amount: 1500,
-    source: 'Non-Recurring Revenue'
-  }, {
-    name: "Bartolino's Hospitality Group",
-    amount: 1000,
-    source: 'Project Website'
-  }, {
-    name: "Chris' Pancakes",
-    amount: 1000,
-    source: 'Website Project'
-  }, {
     name: 'Polyrific',
     amount: 1000,
-    source: 'Paid Media Test Pilot + Setup'
-  }, {
-    name: 'Showalter Roofing Services Inc.',
-    amount: 350,
-    source: 'Landing Page'
-  }, {
-    name: 'Caltron Security - Inbound',
-    amount: 250,
-    source: 'Website Optimization Project'
+    source: 'Winback',
+    psm: 'Doug Yocco / Adam Weber'
   }];
   const januaryDeals = [{
-    name: 'UnCommon Farms',
-    amount: 5541,
-    source: 'Employee Referral'
+    name: 'Print Imaging - Website, SEO, Paid',
+    amount: 3500,
+    source: 'Revenue Transfer',
+    psm: 'OB: James Leisinger',
+    vp: 'Ian Suire'
   }, {
-    name: 'Ace Paving & Maintenance',
-    amount: 3750,
-    source: 'Web Lead'
+    name: 'Nashville Machine Co.',
+    amount: 2750,
+    source: 'OB: Sales Referral (Web Lead)',
+    psm: 'Doug Yocco'
   }, {
-    name: 'Embassy Landscape Group',
-    amount: 2250,
-    source: 'Digital Audit'
+    name: 'Semper Fi Construction',
+    amount: 2500,
+    source: 'Web Lead / Client Referral',
+    psm: 'Mariah Lindsay'
   }, {
-    name: 'Atlas Restoration',
+    name: 'Uncommon Farms - Website, SEO, PPC',
+    amount: 2291,
+    source: 'IB: Employee Referral',
+    psm: 'Doug / Zak'
+  }, {
+    name: 'Campbell Security and Service Group',
     amount: 2000,
-    source: 'Digital Audit'
+    source: 'IB: Client Referral',
+    psm: 'Henry Pfeil',
+    vp: 'Aaron Graue'
   }, {
-    name: 'Harris United',
+    name: 'Fire Extinguisher Service Center',
     amount: 1500,
-    source: 'PSM Upsells'
+    source: 'PSM Upsell - Month 12',
+    psm: 'OB: Jordan Berra',
+    vp: 'Andrew Wittmaier'
   }, {
-    name: 'New Kent Coatings',
-    amount: 1250,
-    source: 'Web + SEO'
+    name: 'White Glove Exotic',
+    amount: 1200,
+    source: 'No commission - discount',
+    psm: 'Stephanie Wiley'
   }, {
-    name: 'Sierra Technology',
-    amount: 1000,
-    source: 'OB Sales'
+    name: 'Caltron Security - Hosting, Local, Maintenance',
+    amount: 350,
+    source: 'Digital Audit',
+    psm: 'SAPPER: Brian Bitzer',
+    vp: 'Alex Guarano'
   }];
   const historicalData = [{
     month: 'Sep',
@@ -1815,12 +1833,50 @@ function Dashboard() {
   e('div', {
     style: {
       display: 'grid',
-      gridTemplateColumns: '1fr 1fr 1fr 280px',
+      gridTemplateColumns: '1fr 1fr 1fr 1fr 280px',
       gap: '16px',
       marginBottom: '16px',
       alignItems: 'stretch'
     }
   },
+  // March Column - MRR + Project stacked (current month)
+  e('div', {
+    style: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '12px'
+    }
+  },
+  // March MRR
+  e('div', {
+    className: 'card kpi-stacked'
+  }, e('div', {
+    className: 'kpi-header'
+  }, e('span', {
+    className: 'kpi-icon'
+  }, DollarIcon), e('span', {
+    className: 'kpi-label'
+  }, 'March MRR')), e('div', {
+    className: 'kpi-hero-stacked text-teal'
+  }, '$24,712'), e('div', {
+    className: 'kpi-meta'
+  }, 'MTD'), e('div', {
+    className: 'kpi-days-left'
+  }, sellingDaysLeft + ' selling days left')),
+  // March Project
+  e('div', {
+    className: 'card kpi-stacked'
+  }, e('div', {
+    className: 'kpi-header'
+  }, e('span', {
+    className: 'kpi-icon'
+  }, ReceiptIcon), e('span', {
+    className: 'kpi-label'
+  }, 'March Project')), e('div', {
+    className: 'kpi-hero-stacked'
+  }, '$18,500'), e('div', {
+    className: 'kpi-meta'
+  }, ''))),
   // February Column - MRR + Project stacked
   e('div', {
     style: {
@@ -1831,27 +1887,26 @@ function Dashboard() {
   },
   // February MRR
   e('div', {
-    className: 'card kpi-stacked'
+    className: 'card kpi-stacked kpi-muted'
   }, e('div', {
     className: 'kpi-header'
   }, e('span', {
-    className: 'kpi-icon text-teal'
+    className: 'kpi-icon'
   }, DollarIcon), e('span', {
     className: 'kpi-label'
   }, 'February MRR')), e('div', {
-    className: 'kpi-hero-stacked text-teal'
+    className: 'kpi-hero-stacked',
+    style: { color: '#eab308' }
   }, '$' + currentMrr.toLocaleString()), e('div', {
     className: 'kpi-meta'
-  }, '8 accounts'), e('div', {
-    className: 'kpi-days-left'
-  }, sellingDaysLeft + ' selling days left')),
+  }, '8 accounts')),
   // February Project
   e('div', {
-    className: 'card kpi-stacked'
+    className: 'card kpi-stacked kpi-muted'
   }, e('div', {
     className: 'kpi-header'
   }, e('span', {
-    className: 'kpi-icon text-maroon'
+    className: 'kpi-icon'
   }, ReceiptIcon), e('span', {
     className: 'kpi-label'
   }, 'February Project')), e('div', {
@@ -1873,7 +1928,7 @@ function Dashboard() {
   }, e('div', {
     className: 'kpi-header'
   }, e('span', {
-    className: 'kpi-icon text-red'
+    className: 'kpi-icon'
   }, DollarIcon), e('span', {
     className: 'kpi-label'
   }, 'January MRR')), e('div', {
@@ -1981,7 +2036,7 @@ function Dashboard() {
       marginBottom: '4px'
     }
   }, e('span', {
-    className: 'kpi-icon-sm text-teal'
+    className: 'kpi-icon-sm'
   }, TargetIconSm), e('span', {
     className: 'kpi-label-sm'
   }, 'Show Rate')), e('div', {
@@ -2022,7 +2077,7 @@ function Dashboard() {
       marginBottom: '4px'
     }
   }, e('span', {
-    className: 'kpi-icon-sm text-teal'
+    className: 'kpi-icon-sm'
   }, ChartIcon), e('span', {
     className: 'kpi-label-sm'
   }, 'Close Rate')), e('div', {
@@ -2060,7 +2115,7 @@ function Dashboard() {
       marginBottom: '4px'
     }
   }, e('span', {
-    className: 'kpi-icon-sm text-maroon'
+    className: 'kpi-icon-sm'
   }, SendIcon), e('span', {
     className: 'kpi-label-sm'
   }, 'Proposals')), e('span', {
@@ -2069,160 +2124,9 @@ function Dashboard() {
       fontWeight: 800,
       color: '#1e293b'
     }
-  }, '16'), e('div', {
+  }, '4'), e('div', {
     className: 'kpi-meta-sm'
-  }, '8 deals closed'))),
-  // Revenue Mix
-  e('div', {
-    className: 'card'
-  }, e('div', {
-    className: 'section-title'
-  }, e('span', {
-    className: 'dot',
-    style: {
-      backgroundColor: teal
-    }
-  }), 'Revenue Mix'), e('div', {
-    style: {
-      display: 'flex',
-      gap: '24px',
-      alignItems: 'center',
-      marginBottom: '20px'
-    }
-  },
-  // Donut Chart
-  e('div', {
-    style: {
-      position: 'relative',
-      width: '100px',
-      height: '100px',
-      flexShrink: 0
-    }
-  }, e('svg', {
-    viewBox: '0 0 36 36',
-    style: {
-      width: '100%',
-      height: '100%',
-      transform: 'rotate(-90deg)'
-    }
-  }, e('circle', {
-    cx: 18,
-    cy: 18,
-    r: 14,
-    fill: 'none',
-    stroke: '#e2e8f0',
-    strokeWidth: 3.5
-  }), e('circle', {
-    cx: 18,
-    cy: 18,
-    r: 14,
-    fill: 'none',
-    stroke: teal,
-    strokeWidth: 3.5,
-    strokeDasharray: '58 100',
-    strokeLinecap: 'round'
-  }), e('circle', {
-    cx: 18,
-    cy: 18,
-    r: 14,
-    fill: 'none',
-    stroke: maroon,
-    strokeWidth: 3.5,
-    strokeDasharray: '42 100',
-    strokeDashoffset: '-58',
-    strokeLinecap: 'round'
-  }))),
-  // Legend
-  e('div', {
-    className: 'revenue-legend'
-  }, e('div', {
-    className: 'legend-item'
-  }, e('span', {
-    className: 'legend-dot',
-    style: {
-      backgroundColor: teal
-    }
-  }), e('span', {
-    className: 'legend-label'
-  }, 'MRR'), e('span', {
-    className: 'legend-value text-teal'
-  }, '$25,300')), e('div', {
-    className: 'legend-item'
-  }, e('span', {
-    className: 'legend-dot',
-    style: {
-      backgroundColor: maroon
-    }
-  }), e('span', {
-    className: 'legend-label'
-  }, 'Project'), e('span', {
-    className: 'legend-value text-maroon'
-  }, '$11,600')))), e('div', {
-    className: 'progress-label'
-  }, 'Current Revenue / Goal Revenue'), e('div', {
-    className: 'progress-bar'
-  }, e('div', {
-    className: 'progress-fill',
-    style: {
-      width: currentMrr / mrrGoal * 100 + '%',
-      backgroundColor: teal
-    }
-  })), e('div', {
-    className: 'progress-text'
-  }, e('span', null, 'MRR '), e('span', {
-    className: 'value text-teal'
-  }, '$' + currentMrr.toLocaleString()), e('span', null, ' / '), e('span', {
-    style: {
-      fontWeight: 700,
-      color: '#1e293b'
-    }
-  }, '$' + mrrGoal.toLocaleString())), e('div', {
-    style: {
-      marginTop: '10px',
-      paddingTop: '10px',
-      borderTop: '1px solid #e2e8f0'
-    }
-  }, e('div', {
-    style: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      fontSize: '0.8rem',
-      marginBottom: '6px'
-    }
-  }, e('span', {
-    style: {
-      color: '#64748b',
-      fontWeight: 600
-    }
-  }, 'Gap to Goal'), e('span', {
-    style: {
-      color: '#dc2626',
-      fontWeight: 800
-    }
-  }, '$' + gapToGoal.toLocaleString())), e('div', {
-    style: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      fontSize: '0.8rem'
-    }
-  }, e('span', {
-    style: {
-      color: '#64748b',
-      fontWeight: 600
-    }
-  }, 'Required Pace'), e('span', {
-    style: {
-      color: '#1e293b',
-      fontWeight: 800
-    }
-  }, '$' + dailyPaceNeeded.toLocaleString() + '/day', e('span', {
-    style: {
-      color: '#94a3b8',
-      fontWeight: 600,
-      marginLeft: '6px',
-      fontSize: '0.75rem'
-    }
-  }, '(' + sellingDaysLeft + ' selling days)'))))),
+  }, '7 deals closed'))),
   // Close Rate by Source (February)
   e('div', {
     className: 'card'
@@ -2273,7 +2177,7 @@ function Dashboard() {
     style: {
       backgroundColor: orange
     }
-  }), 'Close Rate by Source — Last 120 Days'), e('div', {
+  }), 'Close Rate by Source — 2026 YTD'), e('div', {
     className: 'close-rate-list'
   }, closeRate120Days.map((s, i) => e('div', {
     key: i,
@@ -2340,7 +2244,7 @@ function Dashboard() {
     style: {
       backgroundColor: teal
     }
-  }), 'February MRR Sales'), mrrDeals.map((deal, i) => e('div', {
+  }), 'March MRR Sales'), mrrDeals.map((deal, i) => e('div', {
     key: i,
     className: 'deal-item'
   }, e('div', {
@@ -2368,7 +2272,7 @@ function Dashboard() {
     className: 'total-label'
   }, 'Total MRR'), e('span', {
     className: 'total-value text-teal'
-  }, '$25,300'))),
+  }, '$24,712'))),
   // Project Sales
   e('div', {
     className: 'card'
@@ -2379,7 +2283,7 @@ function Dashboard() {
     style: {
       backgroundColor: maroon
     }
-  }), 'February Project Sales'), projectDeals.map((deal, i) => e('div', {
+  }), 'March Project Sales'), projectDeals.map((deal, i) => e('div', {
     key: i,
     className: 'deal-item'
   }, e('div', {
@@ -2407,7 +2311,7 @@ function Dashboard() {
     className: 'total-label'
   }, 'Total Project'), e('span', {
     className: 'total-value text-maroon'
-  }, '$11,600')))))), activeTab === 'ss' && e('div', null, e('div', {
+  }, '$1,000')))))), activeTab === 'ss' && e('div', null, e('div', {
     className: 'grid-2',
     style: {
       marginBottom: '16px'
@@ -2431,7 +2335,7 @@ function Dashboard() {
     className: 'insight-title'
   }, 'MRR Momentum'), e('p', {
     className: 'insight-text'
-  }, "We were at $6,500 MRR closed on 1/9, and have since increased to $25,300 MRR, demonstrating stronger closing velocity and improved month-end execution.")), e('div', {
+  }, "We were at $6,500 MRR closed on 1/9, and have since increased to $22,091 MRR, demonstrating stronger closing velocity and improved month-end execution.")), e('div', {
     className: 'insight-card',
     style: {
       backgroundColor: 'rgba(13,148,136,0.05)',
@@ -2441,7 +2345,7 @@ function Dashboard() {
     className: 'insight-title'
   }, 'Pipeline Activity Increased Meaningfully'), e('p', {
     className: 'insight-text'
-  }, 'We issued 16 proposals this month, reflecting strong engagement across the sales process and sustained pipeline movement.')), e('div', {
+  }, 'We issued 4 proposals this month, reflecting early-month pipeline activity.')), e('div', {
     className: 'insight-card',
     style: {
       backgroundColor: 'rgba(13,148,136,0.05)',
@@ -3260,7 +3164,7 @@ function Dashboard() {
       color: '#16a34a',
       fontWeight: 600
     }
-  }, '+$25,300')), e('div', {
+  }, '+$22,091')), e('div', {
     style: {
       display: 'flex',
       justifyContent: 'space-between'
